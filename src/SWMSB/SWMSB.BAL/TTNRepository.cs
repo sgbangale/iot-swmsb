@@ -40,14 +40,13 @@ namespace SWMSB.BAL
                     await RegisterDeviceBackendRequest(ttnPayload);
                     return IoTHubDeviceResultStatus.DEVICE_NOT_FOUND;
                 }
+                return resultiot;
             }
             else
             {
                 return await HandleDeviceRegistration(ttnPayload, iotHubManagerRepository);
             }
 
-            logger.LogInformation("msg is at repo-end");
-            return IoTHubDeviceResultStatus.MSG_SENT;
         }
 
         private async Task<IoTHubDeviceResultStatus> HandleDeviceRegistration(Root ttnPayload, IiotHubManagerRepository iotHubDeviceClientProvider)
