@@ -1,15 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Azure.EventHubs;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using SWMSB.BAL;
 using SWMSB.COMMON;
-using SWMSB.DEVICE;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace SWMSB.PROCESSORS
 {
@@ -36,13 +33,10 @@ namespace SWMSB.PROCESSORS
 
                     var result = await backendRepository.BackendMsgReceivedAsync(messageBody);
                     log.LogInformation($"{typeof(BackendRequestProcessor)} backend request response- {result.ToString()}");
-                    log.LogInformation($"{typeof(BackendRequestProcessor)} processed a message-{messageBody}");
                     await Task.Yield();
                 }
                 catch (Exception e)
-                {
-                    // We need to keep processing the rest of the batch - capture this exception and continue.
-                    // Also, consider capturing details of the message that failed processing so it can be processed again later.
+                {   
                     exceptions.Add(e);
                     log.LogError($"{typeof(BackendRequestProcessor)} exception:", e.Message);
                 }
