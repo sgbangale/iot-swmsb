@@ -1,0 +1,29 @@
+﻿{
+  "Sample": "{\r\n  \"app_id\": \"swmsb\",\r\n  \"dev_id\": \"ind411057lra101\",\r\n  \"hardware_serial\": \"00BC6472A26011ED\",\r\n  \"port\": 1,\r\n  \"counter\": 0,\r\n  \"payload_raw\": \"7uM=\",\r\n  \"payload_fields\": {\r\n    \"waterusage\": 611.55\r\n  },\r\n  \"metadata\": {\r\n    \"time\": \"2020-09-19T17:49:59.470264623Z\"\r\n  },\r\n  \"downlink_url\": \"https://integrations.thethingsnetwork.org/ttn-eu/api/v2/down/swmsb/swmsbintegration?key=ttn-account-v2.N1xJ3W2zKg9WjHzBl6ngZBfTJvS3oh4ZsJoO341zB0k\"\r\n}",
+  "EventHubProperties": null,
+  "BlobStorageProperties": null,
+  "IoTHubProperties": {
+    "ConsumerGroupName": "$Default",
+    "IotHubNamespace": "SWMSB-IN-SWM",
+    "SharedAccessPolicyKey": null,
+    "SharedAccessPolicyName": "iothubowner",
+    "EndPoint": "messages/events"
+  },
+  "BlobReferenceProperties": null,
+  "SqlReferenceInputInfo": null,
+  "DataSourceCredentialDomain": "db4466ff-4e5d-4b77-892f-a81e84059e56.StreamAnalyticsCredential",
+  "Name": "smwsb-iothub",
+  "Type": "Data Stream",
+  "DataSourceType": "IoT Hub",
+  "Serialization": {
+    "Encoding": "UTF8",
+    "Type": "Json",
+    "FieldDelimiter": null,
+    "Format": null,
+    "SerializationDllPath": null,
+    "SerializationClassName": null,
+    "SerializationDllPathInLocal": null
+  },
+  "CompresssionType": "None",
+  "ScriptType": "Input"
+}
