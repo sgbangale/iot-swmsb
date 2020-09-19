@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="DeviceTelemetryRepository.cs" />
+    <Compile Remove="DeviceTwinRepository.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Azure.Cosmos.Table" Version="1.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SWMSB.DATA\SWMSB.DATA.csproj" />
+    <ProjectReference Include="..\SWMSB.DEVICE\SWMSB.DEVICE.csproj" />
+  </ItemGroup>
+
+</Project>

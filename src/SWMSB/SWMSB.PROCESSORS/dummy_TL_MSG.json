@@ -1,0 +1,7 @@
+{
+  "deviceid": "SWMSB-IN-SWM-000{{int 1 10}}",
+  "tenantid": "{{guid}}",
+  "type": "tlm",
+  "waterusage": "{{float 1 10}}",
+  "messagegenerated": "{{date '2020-09-16T09:00' '2020-09-16T17:30' 'unix'}}"
+}
