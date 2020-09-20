@@ -1,8 +1,11 @@
 ﻿using Microsoft.Azure.Devices.Client;
 using Microsoft.Extensions.Logging;
+using RestSharp;
 using SWMSB.COMMON;
 using SWMSB.DEVICE;
 using System;
+using System.IO;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -26,7 +29,7 @@ namespace SWMSB.DATA
         {
             int retryCount = 0;
             Random randomDelay = new Random();
-          
+
             while (true)
             {
                 try
@@ -53,6 +56,23 @@ namespace SWMSB.DATA
                     await Task.Delay(randomDelay.Next(1000, 2000));
                 }
             }
+        }
+        public static IoTHubDeviceResultStatus SendDownlink(Config config, DownlinkMsg downlinkMsg, ILogger logger)
+        {
+            logger.LogInformation($"SendDownlink-start-{downlinkMsg.ToIntendedJsonString()}");
+            if (!downlinkMsg.Validate().Success)
+            {
+                return IoTHubDeviceResultStatus.INVALID_REQUEST;
+            }
+
+            var client = new RestClient(config.TTN_DOWNLINK_URL);
+            client.Timeout = -1;
+            var request = new RestRequest(Method.POST);
+            request.AddHeader("Content-Type", "application/json");
+            request.AddParameter("application/json", downlinkMsg.ToJsonString(), ParameterType.RequestBody);
+            IRestResponse response = client.Execute(request);
+            return response.StatusCode == HttpStatusCode.Accepted ? IoTHubDeviceResultStatus.MSG_SENT : IoTHubDeviceResultStatus.MSG_FAILED;
+
         }
 
     }

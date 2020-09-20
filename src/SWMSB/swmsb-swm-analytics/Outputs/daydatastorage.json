@@ -1,0 +1,25 @@
+﻿{
+  "EventHubProperties": null,
+  "BlobStorageProperties": null,
+  "SQLDatabaseProperties": null,
+  "TableStorageProperties": {
+    "AccountKey": null,
+    "AccountName": "swmsbprocessorsstorage",
+    "BatchSize": 100,
+    "ColumnsToRemove": null,
+    "PartitionKey": "partitionkey",
+    "RowKey": "rowkey",
+    "Table": "swmsbtlm"
+  },
+  "ServiceBusQueueProperties": null,
+  "ServiceBusTopicProperties": null,
+  "DocumentDbProperties": null,
+  "PowellBIProperties": null,
+  "AzureDataLakeStoreProperties": null,
+  "AzureFunctionProperties": null,
+  "DataSourceCredentialDomain": null,
+  "Name": "daydatastorage",
+  "DataSourceType": "Table Storage",
+  "Serialization": null,
+  "ScriptType": "Output"
+}

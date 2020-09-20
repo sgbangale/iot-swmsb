@@ -1,5 +1,6 @@
 #include <TheThingsNetwork.h>
 //https://www.thethingsnetwork.org/docs/devices/arduino/usage.html
+//https://github.com/TheThingsNetwork/arduino-device-lib/tree/master/examples - for extra help on ttn lora 
 // OTAA or ABP keys
 const char *appEui = "70B3D57ED0034F18";
 const char *appKey = "849E49C3D6146017302135F9B31337BC";

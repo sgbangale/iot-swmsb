@@ -1,0 +1,36 @@
+﻿select waterusage,dev_id
+INTO
+    [alert]
+    FROM
+    (
+select max(waterusage) as waterusage,dev_id
+
+FROM
+(
+SELECT SUM(payload_fields.waterusage) OVER (PARTITION BY dev_id LIMIT DURATION (minute, 5))  AS waterusage,
+dev_id
+FROM
+    [SMWSB-IOTHUB] AS IOT
+) as t
+group by dev_id, TumblingWindow(minute,60)
+) AS tt
+where waterusage > 50
+
+select dev_id,waterusage
+INTO [dayalert]
+from(
+SELECT dev_id,SUM(payload_fields.waterusage) as waterusage
+FROM [SMWSB-IOTHUB] AS IOT
+group by dev_id, TumblingWindow(hour,24)) as dayalertT
+where waterusage >= 1000
+
+select rowkey,sum(waterusage) as daywaterusage,partitionkey
+into daydatastorage
+from(
+select dev_id as rowkey,waterusage,concat(DATENAME (dayofyear, time),'-',DATENAME (year, time)) as partitionkey
+from(
+SELECT dev_id,(payload_fields.waterusage) as waterusage,metadata.time
+FROM [SMWSB-IOTHUB] AS IOT
+) as usage
+) as dayalertT
+group by rowkey,partitionkey,TumblingWindow(hour,24)

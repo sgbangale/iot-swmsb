@@ -27,5 +27,7 @@
         public const string IOT_HUB_CS = "IOT_HUB_CS";
         public const string BACKEND_REQUEST_ENTITY_PATH = "BACKEND_REQUEST_ENTITY_PATH";
         public const string BACKEND_REQUEST_EVENT_HUB = "EventHubEndPoint";
+        public const string TTN_DOWNLINK_URL = "TTN_DOWNLINK_URL";
+        
     }
 }

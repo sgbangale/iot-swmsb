@@ -15,7 +15,7 @@ namespace SWMSB.COMMON
 
         public string BACKEND_REQUEST_ENTITY_PATH { get; set; }
         public string BACKEND_REQUEST_EVENT_HUB { get; }
-
+        public string TTN_DOWNLINK_URL { get; set; }
         public Config()
         {
             DocumentSecreteKeys = new DocumentDbSecret();
@@ -26,6 +26,7 @@ namespace SWMSB.COMMON
             IOT_HUB_CS = Environment.GetEnvironmentVariable(CommonConstants.IOT_HUB_CS);
             BACKEND_REQUEST_ENTITY_PATH = Environment.GetEnvironmentVariable(CommonConstants.BACKEND_REQUEST_ENTITY_PATH);
             BACKEND_REQUEST_EVENT_HUB = Environment.GetEnvironmentVariable(CommonConstants.BACKEND_REQUEST_EVENT_HUB);
+            TTN_DOWNLINK_URL = Environment.GetEnvironmentVariable(CommonConstants.TTN_DOWNLINK_URL);
         }
 
     }

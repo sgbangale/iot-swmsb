@@ -17,7 +17,7 @@ namespace SWMSB.DEVICE
     {
         [Required]
         [JsonProperty("waterusage")]
-        [Range(0.1,1000)]
+        [Range(0.1, 1000)]
         public double Waterusage { get; set; }
     }
 
@@ -25,6 +25,41 @@ namespace SWMSB.DEVICE
     {
         [JsonProperty("time")]
         public string Time { get; set; }
+    }
+
+    // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse); 
+    public class DownlinkMsg
+    {
+        [Required]
+        [JsonProperty("payload_raw")]
+        public string PayloadRaw { get; set; }
+
+        [Required]
+        [JsonProperty("confirmed")]
+        public bool Confirmed { get; set; }
+        [Required]
+
+        [JsonProperty("port")]
+        public string Port { get; set; }
+        [Required]
+        [JsonProperty("dev_id")]
+        public string DevId { get; set; }
+        public string ToIntendedJsonString()
+        {
+            if (this == null)
+            {
+                return string.Empty;
+            }
+            return JsonConvert.SerializeObject(this, Formatting.Indented);
+        }
+        public string ToJsonString()
+        {
+            if (this == null)
+            {
+                return string.Empty;
+            }
+            return JsonConvert.SerializeObject(this, Formatting.None);
+        }
     }
 
     public class Root

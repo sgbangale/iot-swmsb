@@ -1,0 +1,46 @@
+﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>9a045474-42b0-474f-871c-8837acc31f6e</ProjectGuid>
+    <OutputType>File</OutputType>
+    <AssemblyName>swmsb_swm_analytics</AssemblyName>
+    <ASATargetsFilePath>$(AppData)\Microsoft\DataLake\MsBuild\1.0\StreamAnalytics.targets</ASATargetsFilePath>
+    <Name>swmsb-swm-analytics</Name>
+    <RootNamespace>swmsb-swm-analytics</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>false</DebugSymbols>
+    <OutputPath>bin\Release\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="Functions\" />
+    <Folder Include="Inputs\" />
+    <Folder Include="Outputs\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Configure Include="Configuration.json">
+      <SubType>JobConfig</SubType>
+    </Configure>
+    <Configure Include="Inputs\smwsb-iothub.json">
+      <SubType>Input</SubType>
+    </Configure>
+    <Configure Include="Outputs\alert.json">
+      <SubType>Output</SubType>
+    </Configure>
+    <Configure Include="Outputs\dayalert.json">
+      <SubType>Output</SubType>
+    </Configure>
+    <Configure Include="Outputs\daydatastorage.json">
+      <SubType>Output</SubType>
+    </Configure>
+  </ItemGroup>
+  <ItemGroup>
+    <Script Include="swmsb-swm-analytics.asaql" />
+  </ItemGroup>
+  <Import Project="$(ASATargetsFilePath)" />
+</Project>
