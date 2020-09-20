@@ -1,10 +1,39 @@
 ﻿using Microsoft.Azure.Documents;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace SWMSB.DEVICE
 {
+    // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse); 
+    public class Alert
+    {
+        [Required]
+        [JsonProperty("waterusage")]
+        public double Waterusage { get; set; }
+        [Required]
+
+        [JsonProperty("dev_id")]
+        public string DevId { get; set; }
+        [Required]
+
+        [JsonProperty("alerttype")]
+        [JsonConverter(typeof(StringEnumConverter))]
+        public AlertType AlertType { get; set; }
+
+        public string ToIntendedJsonString()
+        {
+            return JsonConvert.SerializeObject(this, Formatting.Indented);
+        }
+    }
+    public enum AlertType
+    {
+        ALERT_FIFTY_G,
+        ALERT_THOUSAND_G
+    }
+
     public class DeviceTelemetryMsg
     {
 

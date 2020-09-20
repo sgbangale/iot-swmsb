@@ -1,14 +1,9 @@
-﻿using AutoMapper;
-using Microsoft.Azure.Cosmos.Table;
-using Microsoft.Azure.EventHubs;
+﻿using Microsoft.Azure.EventHubs;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SWMSB.COMMON;
-using SWMSB.DATA;
 using SWMSB.DEVICE;
 using System;
-using System.Collections.Generic;
-using System.Runtime.Caching;
 using System.Text;
 using System.Threading.Tasks;
 

@@ -6,7 +6,7 @@ using System;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SWMSB.DATA
+namespace SWMSB.PROVIDERS
 {
     public class BackendRequestProvider
     {

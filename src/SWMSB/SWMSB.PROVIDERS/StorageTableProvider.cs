@@ -6,7 +6,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SWMSB.DATA
+namespace SWMSB.PROVIDERS
 {
     public static class StorageTableExtension
     {

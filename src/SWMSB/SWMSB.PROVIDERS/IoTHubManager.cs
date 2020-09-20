@@ -4,7 +4,7 @@ using SWMSB.COMMON;
 using System;
 using System.Threading.Tasks;
 
-namespace SWMSB.DATA
+namespace SWMSB.PROVIDERS
 {
     public class IoTHubManager
     {

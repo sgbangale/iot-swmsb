@@ -4,12 +4,11 @@ using RestSharp;
 using SWMSB.COMMON;
 using SWMSB.DEVICE;
 using System;
-using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SWMSB.DATA
+namespace SWMSB.PROVIDERS
 {
     public class IoTHubDeviceClientProvider
     {

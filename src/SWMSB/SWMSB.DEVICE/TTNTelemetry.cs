@@ -1,5 +1,4 @@
-﻿using Microsoft.Azure.Documents;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using SWMSB.COMMON;
 using System;
 using System.Collections.Generic;
@@ -27,7 +26,6 @@ namespace SWMSB.DEVICE
         public string Time { get; set; }
     }
 
-    // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse); 
     public class DownlinkMsg
     {
         [Required]

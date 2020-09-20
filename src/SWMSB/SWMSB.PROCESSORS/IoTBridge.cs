@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SWMSB.BAL;
 using SWMSB.COMMON;
-using SWMSB.DATA;
 using SWMSB.DEVICE;
 using System;
 using System.IO;
@@ -46,15 +45,7 @@ namespace SWMSB.PROCESSORS
                 if (ttnPayload != null)
                 {
                     log.LogTrace(ttnPayload.ToIntendedJsonString());
-                    IoTHubDeviceClientProvider.SendDownlink(config,
-                        new DownlinkMsg
-                        {
-                            DevId = ttnPayload.DevId,
-                            Confirmed = false,
-                            PayloadRaw = ttnPayload.PayloadRaw,
-                            Port = ttnPayload.Port.ToString()
-                        }
-                        , log);
+                  
                     //send msg to repository method
                     var result = await ttnRepository.TelemetryMsgReceivedAsync(ttnPayload);
                     return new OkObjectResult(result.ToString());

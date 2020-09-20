@@ -30,20 +30,13 @@ namespace SWMSB.PROCESSORS
                 {
                     string messageBody = Encoding.UTF8.GetString(eventData.Body.Array, eventData.Body.Offset, eventData.Body.Count);
 
-                    if(eventData.Properties.ContainsKey("dev_id"))
-                    {
-                        //alert functionlity
-                    }
-                    else
-                    {
-                        var result = await backendRepository.BackendMsgReceivedAsync(messageBody);
-                        log.LogInformation($"{typeof(BackendRequestProcessor)} backend request response- {result.ToString()}");
-                    }
-           
+                    var result = await backendRepository.BackendMsgReceivedAsync(messageBody);
+                    log.LogInformation($"{typeof(BackendRequestProcessor)} backend request response- {result.ToString()}");
+
                     await Task.Yield();
                 }
                 catch (Exception e)
-                {   
+                {
                     exceptions.Add(e);
                     log.LogError($"{typeof(BackendRequestProcessor)} exception:", e.Message);
                 }

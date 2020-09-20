@@ -5,14 +5,12 @@ using Newtonsoft.Json;
 using SWMSB.COMMON;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace SWMSB.DATA
+namespace SWMSB.PROVIDERS
 {
     public class DocumentResult<TDocument> where TDocument : class
     {

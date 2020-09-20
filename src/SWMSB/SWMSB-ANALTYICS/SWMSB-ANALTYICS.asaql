@@ -1,5 +1,4 @@
-﻿
-select waterusage,dev_id
+﻿select waterusage,dev_id,'ALERT_FIFTY_G' AS alerttype
 INTO
     [alert]
     FROM
@@ -17,7 +16,7 @@ group by dev_id, TumblingWindow(minute,60)
 ) AS tt
 where waterusage > 50
 
-select dev_id,waterusage
+select dev_id,waterusage,'ALERT_THOUSAND_G' AS alerttype
 INTO [dayalert]
 from(
 SELECT dev_id,SUM(payload_fields.waterusage) as waterusage
@@ -34,5 +33,4 @@ SELECT dev_id,(payload_fields.waterusage) as waterusage,metadata.time
 FROM iothub AS IOT
 ) as usage
 ) as dayalertT
-group by rowkey,partitionkey,TumblingWindow(minute,2)
-*/
+group by rowkey,partitionkey,TumblingWindow(hour,24)

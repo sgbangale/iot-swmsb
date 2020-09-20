@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using SWMSB.COMMON;
-using SWMSB.DATA;
 using SWMSB.DEVICE;
 using System.Runtime.Caching;
 using System.Threading.Tasks;

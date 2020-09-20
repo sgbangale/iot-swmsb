@@ -6,7 +6,6 @@
   <ItemGroup>
     <Compile Remove="DataCollector - Copy.cs" />
     <Compile Remove="DataCollector.cs" />
-    <Compile Remove="MessageProcessor.cs" />
     <Compile Remove="TwinProcessor.cs" />
   </ItemGroup>
   <ItemGroup>

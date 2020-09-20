@@ -28,6 +28,8 @@
         public const string BACKEND_REQUEST_ENTITY_PATH = "BACKEND_REQUEST_ENTITY_PATH";
         public const string BACKEND_REQUEST_EVENT_HUB = "EventHubEndPoint";
         public const string TTN_DOWNLINK_URL = "TTN_DOWNLINK_URL";
-        
+        public const string SENDGRID_API_KEY = "SENDGRID_API_KEY";
+
+
     }
 }
