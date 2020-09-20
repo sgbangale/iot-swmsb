@@ -6,7 +6,6 @@
   <ItemGroup>
     <Compile Remove="DataCollector - Copy.cs" />
     <Compile Remove="DataCollector.cs" />
-    <Compile Remove="TwinProcessor.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Azure.Cosmos.Table" Version="1.0.8" />

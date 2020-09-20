@@ -1,31 +1,27 @@
-﻿using Microsoft.Azure.Cosmos.Table;
-using Microsoft.Azure.EventHubs;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SWMSB.COMMON;
 using SWMSB.DEVICE;
 using SWMSB.PROVIDERS;
 using System;
-using System.Collections.Generic;
 using System.Runtime.Caching;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SWMSB.BAL
 {
-    public interface IiotHubManagerRepository
+    public interface IIotHubManagerRepository
     {
-
         Task<bool> IsDeviceRegisteredAsync(string deviceId);
         Task<IoTHubDeviceResultStatus> AddDeviceAsync(string deviceId);
-
-        Task<IoTHubDeviceResultStatus> SendEventAsync(Root ttnPayload);
+        Task<IoTHubDeviceResultStatus> SendEventAsync(TTNUpLinkPayload ttnPayload);
+        Task<DeviceAttribute> UpdateDeviceTwinAsync(DeviceAttribute deviceAttribute);
+        Task<DeviceAttribute> GetDeviceTwinAsync(DeviceAttribute deviceAttribute);
     }
 
-    public sealed class IotHubManagerRepository : IiotHubManagerRepository
+    public sealed class IotHubManagerRepository : IIotHubManagerRepository
     {
         ILogger logger;
-        private IoTHubManager iotHubManager;
+        private IoTHubProvider iotHubManager;
 
         public Config Config { get; set; }
 
@@ -33,32 +29,9 @@ namespace SWMSB.BAL
         {
             Config = _config;
             logger = _logger;
-            iotHubManager = new IoTHubManager(Config.IOT_HUB_CS, _logger);
+            iotHubManager = new IoTHubProvider(Config, _logger);
         }
 
-        
-        public static void AddOrUpdateToCache(string deviceid)
-        {
-            if (!string.IsNullOrEmpty(deviceid))
-            {
-                var devid = deviceid.Trim();
-                if (!MemoryCache.Default.Contains(deviceid))
-                {
-                    MemoryCache.Default.Add(new CacheItem(devid, string.Empty), new CacheItemPolicy()
-                    {
-                        SlidingExpiration = new TimeSpan(hours: 1, 0, 0)
-                    });
-                }
-                else
-                {
-                    MemoryCache.Default.Set(new CacheItem(devid, string.Empty), new CacheItemPolicy()
-                    {
-                        SlidingExpiration = new TimeSpan(hours: 1, 0, 0)
-                    });
-                }
-            }
-       
-        }
 
         public async Task<bool> IsDeviceRegisteredAsync(string deviceId)
         {
@@ -70,7 +43,7 @@ namespace SWMSB.BAL
             return await iotHubManager.AddDeviceAsync(deviceId);
         }
 
-        public async Task<IoTHubDeviceResultStatus> SendEventAsync(Root ttnPayload)
+        public async Task<IoTHubDeviceResultStatus> SendEventAsync(TTNUpLinkPayload ttnPayload)
         {
             //validation of payload
             Validation ttnPayloadValidationResult = ttnPayload.Validate();
@@ -86,10 +59,70 @@ namespace SWMSB.BAL
                 return IoTHubDeviceResultStatus.INVALID_REQUEST;
             }
 
-            IoTHubDeviceClientProvider ioTHubDeviceClientProvider = new IoTHubDeviceClientProvider(Config,ttnPayload.DevId, logger);
+            IoTDeviceProvider ioTHubDeviceClientProvider = new IoTDeviceProvider(Config, ttnPayload.DevId, logger);
 
             return await ioTHubDeviceClientProvider.SendEventAsync(ttnPayload);
 
+        }
+
+
+        public async Task<DeviceAttribute> UpdateDeviceTwinAsync(DeviceAttribute deviceAttribute)
+        {
+            if (!string.IsNullOrEmpty(deviceAttribute.DeviceId))
+                return await HandleCache(deviceAttribute);
+
+            return null;
+        }
+
+        private async Task<DeviceAttribute> HandleCache(DeviceAttribute deviceAttribute)
+        {
+            var devid = deviceAttribute.DeviceId.Trim();
+            var cache = MemoryCache.Default.GetCacheItem(devid);
+            if (cache == null)
+            {
+                var result = await iotHubManager.UpdateDeviceTwinAsync(deviceAttribute);
+
+                MemoryCache.Default.Add(new CacheItem(devid, result.ToIntendedJsonString()), new CacheItemPolicy()
+                {
+                    SlidingExpiration = new TimeSpan(hours: 1, 0, 0)
+                });
+
+                return result;
+            }
+            else
+            {
+                return JsonConvert.DeserializeObject<DeviceAttribute>(cache.Value.ToString());
+            }
+        }
+
+        public async Task<DeviceAttribute> GetDeviceTwinAsync(DeviceAttribute deviceAttribute)
+        {
+            if (!string.IsNullOrEmpty(deviceAttribute.DeviceId))
+            {
+                return await HandleGetTwinCache(deviceAttribute);
+            }
+
+            return null;
+        }
+
+        private async Task<DeviceAttribute> HandleGetTwinCache(DeviceAttribute deviceAttribute)
+        {
+            var devid = deviceAttribute.DeviceId.Trim();
+            var cache = MemoryCache.Default.GetCacheItem(devid);
+
+            if (cache == null)
+            {
+                var result = await iotHubManager.GetDeviceTwin(deviceAttribute.DeviceId);
+                MemoryCache.Default.Add(new CacheItem(devid, result.ToIntendedJsonString()), new CacheItemPolicy()
+                {
+                    SlidingExpiration = new TimeSpan(hours: 1, 0, 0)
+                });
+                return result;
+            }
+            else
+            {
+                return JsonConvert.DeserializeObject<DeviceAttribute>(cache.Value.ToString());
+            }
         }
     }
 }

@@ -12,6 +12,13 @@ namespace SWMSB.PROCESSORS
 {
     public static class BackendRequestProcessor
     {
+        static BackendRequestProcessor()
+        {
+            Config = new Config();
+
+        }
+
+        public static Config Config { get; }
 
         [FunctionName(ProcessorsConstants.BackendRequestProcessor)]
         public static async Task Run(
@@ -21,15 +28,13 @@ namespace SWMSB.PROCESSORS
             ILogger log)
         {
             var exceptions = new List<Exception>();
-            var config = new Config();
-            IBackendRepository backendRepository = new BackendRepository(config, log);
+            IBackendRepository backendRepository = new BackendRepository(Config, log);
 
             foreach (EventData eventData in events)
             {
                 try
                 {
                     string messageBody = Encoding.UTF8.GetString(eventData.Body.Array, eventData.Body.Offset, eventData.Body.Count);
-
                     var result = await backendRepository.BackendMsgReceivedAsync(messageBody);
                     log.LogInformation($"{typeof(BackendRequestProcessor)} backend request response- {result.ToString()}");
 

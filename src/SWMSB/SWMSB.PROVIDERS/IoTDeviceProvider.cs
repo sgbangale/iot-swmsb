@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SWMSB.PROVIDERS
 {
-    public class IoTHubDeviceClientProvider
+    public class IoTDeviceProvider
     {
         private readonly string NOT_FOUND_IOT_DEVICE = "condition:amqp:not-found";
         public string IoTHubConnectionString { get; set; }
@@ -18,13 +18,13 @@ namespace SWMSB.PROVIDERS
         public Config Config { get; }
         public DeviceClient DeviceClient { get; }
 
-        public IoTHubDeviceClientProvider(Config config, string deviceid, ILogger _logger)
+        public IoTDeviceProvider(Config config, string deviceid, ILogger _logger)
         {
             log = _logger;
             Config = config;
             DeviceClient = DeviceClient.CreateFromConnectionString(config.IOT_HUB_CS, deviceid);
         }
-        public async Task<IoTHubDeviceResultStatus> SendEventAsync(Root ttnPayload)
+        public async Task<IoTHubDeviceResultStatus> SendEventAsync(TTNUpLinkPayload ttnPayload)
         {
             int retryCount = 0;
             Random randomDelay = new Random();
@@ -43,7 +43,7 @@ namespace SWMSB.PROVIDERS
                 }
                 catch (Exception ex)
                 {
-                    log.LogError($"{ttnPayload.DevId}-{ex.Message}", ex, $"Error-{typeof(IoTHubDeviceClientProvider)}");
+                    log.LogError($"{ttnPayload.DevId}-{ex.Message}", ex, $"Error-{typeof(IoTDeviceProvider)}");
                     if (ex.Message.Contains(NOT_FOUND_IOT_DEVICE))
                     {
                         return IoTHubDeviceResultStatus.DEVICE_NOT_FOUND;
@@ -56,7 +56,8 @@ namespace SWMSB.PROVIDERS
                 }
             }
         }
-        public static IoTHubDeviceResultStatus SendDownlink(Config config, DownlinkMsg downlinkMsg, ILogger logger)
+      
+        public static IoTHubDeviceResultStatus SendDownlink(Config config, TTNDownLinkPayload downlinkMsg, ILogger logger)
         {
             logger.LogInformation($"SendDownlink-start-{downlinkMsg.ToIntendedJsonString()}");
             if (!downlinkMsg.Validate().Success)

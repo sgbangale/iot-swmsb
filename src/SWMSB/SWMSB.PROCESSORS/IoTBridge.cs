@@ -18,16 +18,9 @@ namespace SWMSB.PROCESSORS
     {
         private static readonly Config config;
         private static MemoryCache LocalCache = MemoryCache.Default;
-
-        private static CacheItemPolicy policy;
         static IoTBridge()
         {
             config = new Config();
-
-            CacheItemPolicy policy = new CacheItemPolicy()
-            {
-                SlidingExpiration = new TimeSpan(0, 5, 0)
-            };
         }
         [FunctionName("IoTBridge")]
         public static async Task<IActionResult> Run(
@@ -40,7 +33,7 @@ namespace SWMSB.PROCESSORS
                 TTNRepository ttnRepository = new TTNRepository(config, log, LocalCache);
 
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-                Root ttnPayload = JsonConvert.DeserializeObject<Root>(requestBody);
+                TTNUpLinkPayload ttnPayload = JsonConvert.DeserializeObject<TTNUpLinkPayload>(requestBody);
 
                 if (ttnPayload != null)
                 {

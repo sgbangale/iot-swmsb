@@ -1,7 +1,5 @@
 ﻿using Newtonsoft.Json;
 using SWMSB.COMMON;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace SWMSB.DEVICE
@@ -10,7 +8,7 @@ namespace SWMSB.DEVICE
     {
         [Required]
         public string DeviceId { get; set; }
-        public Root TTNPayload { get; set; }
+        public TTNUpLinkPayload TTNPayload { get; set; }
     }
     public class PayloadFields
     {
@@ -26,7 +24,7 @@ namespace SWMSB.DEVICE
         public string Time { get; set; }
     }
 
-    public class DownlinkMsg
+    public class TTNDownLinkPayload
     {
         [Required]
         [JsonProperty("payload_raw")]
@@ -60,7 +58,7 @@ namespace SWMSB.DEVICE
         }
     }
 
-    public class Root
+    public class TTNUpLinkPayload
     {
         public string ToIntendedJsonString()
         {
@@ -99,25 +97,4 @@ namespace SWMSB.DEVICE
         [JsonProperty("downlink_url")]
         public string DownlinkUrl { get; set; }
     }
-
-    public class TTNDeviceTelemetry
-    {
-        [JsonProperty("device_id")]
-        public string DeviceId { get; set; }
-
-        [JsonProperty("raw")]
-        public string Raw { get; set; }
-
-        [JsonProperty("time")]
-        public DateTime Time { get; set; }
-    }
-
-    public class RootTTNDeviceTelemetries
-    {
-        [JsonProperty("TTNDeviceTelemetries")]
-        public List<TTNDeviceTelemetry> TTNDeviceTelemetries { get; set; }
-    }
-
-
-
 }

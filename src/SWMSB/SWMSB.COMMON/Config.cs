@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SWMSB.COMMON
 {
@@ -8,18 +6,15 @@ namespace SWMSB.COMMON
     {
         public string TTN_API_KEY { get; }
         public string TTN_DATA_STORAGE_ENDPOINT { get; }
-        public DocumentDbSecret DocumentSecreteKeys { get; }
         public string BlobStorageConnectionString { get; }
         public string StorageTelemetryTableName { get; }
         public string IOT_HUB_CS { get; set; }
-
         public string BACKEND_REQUEST_ENTITY_PATH { get; set; }
         public string BACKEND_REQUEST_EVENT_HUB { get; }
         public string TTN_DOWNLINK_URL { get; set; }
         public string SENDGRID_API_KEY { get; set; }
         public Config()
-        {
-            DocumentSecreteKeys = new DocumentDbSecret();
+        {  
             BlobStorageConnectionString = Environment.GetEnvironmentVariable(CommonConstants.BlobStorageConnectionString);
             StorageTelemetryTableName = Environment.GetEnvironmentVariable(CommonConstants.StorageTelemetryTableName);
             TTN_API_KEY = Environment.GetEnvironmentVariable(CommonConstants.TTN_API_KEY);
@@ -30,21 +25,6 @@ namespace SWMSB.COMMON
             TTN_DOWNLINK_URL = Environment.GetEnvironmentVariable(CommonConstants.TTN_DOWNLINK_URL);
             SENDGRID_API_KEY = Environment.GetEnvironmentVariable(CommonConstants.SENDGRID_API_KEY);
         }
-
     }
-    public class DocumentDbSecret
-    {
-        public DocumentDbSecret()
-        {
-            DocumentDbEndpointUrl = Environment.GetEnvironmentVariable(CommonConstants.DocumentDbEndpointUrl);
-            DocumentDbAuthorizationKey = Environment.GetEnvironmentVariable(CommonConstants.DocumentDbAuthorizationKey);
-            DocumentDbName = Environment.GetEnvironmentVariable(CommonConstants.DocumentDbName);
-            DocumentCollectionName = Environment.GetEnvironmentVariable(CommonConstants.DocumentCollectionName);
-        }
-
-        public string DocumentDbEndpointUrl { get; }
-        public string DocumentDbAuthorizationKey { get; }
-        public string DocumentDbName { get; }
-        public string DocumentCollectionName { get; }
-    }
+  
 }

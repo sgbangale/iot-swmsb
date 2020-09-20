@@ -10,10 +10,6 @@
         INVALID_REQUEST
 
     }
-    public class ApplicationConstants
-    {
-
-    }
     public class CommonConstants
     {
         public const string DocumentDbEndpointUrl = "DocumentDbEndpointUrl";
@@ -29,7 +25,5 @@
         public const string BACKEND_REQUEST_EVENT_HUB = "EventHubEndPoint";
         public const string TTN_DOWNLINK_URL = "TTN_DOWNLINK_URL";
         public const string SENDGRID_API_KEY = "SENDGRID_API_KEY";
-
-
     }
 }
