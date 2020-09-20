@@ -42,5 +42,10 @@
   <ItemGroup>
     <Script Include="SWMSB-ANALTYICS.asaql" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include=".gitignore">
+      <SubType>Content</SubType>
+    </Content>
+  </ItemGroup>
   <Import Project="$(ASATargetsFilePath)" />
 </Project>
