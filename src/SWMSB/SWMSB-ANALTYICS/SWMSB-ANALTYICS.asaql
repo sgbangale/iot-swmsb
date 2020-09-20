@@ -1,4 +1,5 @@
-﻿select waterusage,dev_id
+﻿
+select waterusage,dev_id
 INTO
     [alert]
     FROM
@@ -34,3 +35,4 @@ FROM iothub AS IOT
 ) as usage
 ) as dayalertT
 group by rowkey,partitionkey,TumblingWindow(minute,2)
+*/
