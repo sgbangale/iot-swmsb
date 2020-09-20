@@ -12,7 +12,7 @@
   "BlobReferenceProperties": null,
   "SqlReferenceInputInfo": null,
   "DataSourceCredentialDomain": null,
-  "Name": "smwsb-iothub",
+  "Name": "IOTHUB",
   "Type": "Data Stream",
   "DataSourceType": "IoT Hub",
   "Serialization": {
