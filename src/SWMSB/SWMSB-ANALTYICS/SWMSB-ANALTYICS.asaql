@@ -27,7 +27,7 @@ where waterusage >= 1000
 select rowkey,sum(waterusage) as daywaterusage,partitionkey
 into daydatastorage
 from(
-select dev_id as rowkey,waterusage,concat(DATENAME (dayofyear, time),'-',DATENAME (year, time)) as partitionkey
+select dev_id as partitionkey,waterusage,concat(DATENAME (dayofyear, time),'-',DATENAME (year, time)) as rowkey
 from(
 SELECT dev_id,(payload_fields.waterusage) as waterusage,metadata.time
 FROM iothub AS IOT
