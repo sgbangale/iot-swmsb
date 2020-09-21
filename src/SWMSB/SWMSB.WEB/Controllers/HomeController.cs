@@ -35,7 +35,7 @@ namespace SWMSB.WEB.Controllers
             return View(activeData);
         }
 
-        public IActionResult Contact()
+        public IActionResult Contact(string deviceid)
         {
             ViewData["Message"] = "Your contact page.";
 
