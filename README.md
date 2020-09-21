@@ -1,5 +1,5 @@
 # iot-swmsb - Smart water metering Solution for residents
--Suraj Bangale
+Dashboard - https://swmsbweb.azurewebsites.net/
 
 # Objective: To create an IoT water consumption measuring system using a simulated device or open source or a public LoRa IoT node/network server and MS Azure IoT Platform for a Smart City project.
 
