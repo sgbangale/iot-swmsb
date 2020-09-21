@@ -28,7 +28,7 @@ namespace SWMSB.BAL
 
         public async Task<IoTHubDeviceResultStatus> TelemetryMsgReceivedAsync(TTNUpLinkPayload ttnPayload)
         {
-            logger.LogInformation("msg is at repo-start");
+            logger.LogInformation("msg is at repo-start-kudu");
             logger.LogInformation($"msg-body-{ttnPayload.ToIntendedJsonString()}");
 
 
