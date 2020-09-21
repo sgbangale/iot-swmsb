@@ -29,6 +29,8 @@ namespace SWMSB.PROCESSORS
         {
             try
             {
+                log.LogTrace($"this is iot bridge-start"); //test for ci/cd
+
                 //create config instance and initilize repository
                 TTNRepository ttnRepository = new TTNRepository(config, log, LocalCache);
 

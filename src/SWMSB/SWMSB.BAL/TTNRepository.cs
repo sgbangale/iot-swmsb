@@ -49,6 +49,8 @@ namespace SWMSB.BAL
             {
                 return await HandleDeviceRegistration(ttnPayload, Manager);
             }
+
+
         }
 
         private async Task<IoTHubDeviceResultStatus> HandleDeviceRegistration(TTNUpLinkPayload ttnPayload, IIotHubManagerRepository iotHubDeviceClientProvider)
