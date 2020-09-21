@@ -1,0 +1,44 @@
+﻿@model List<IoTDevice>
+@{
+    ViewData["Title"] = "Active Meters - Last 30 Minutes";
+}
+<h2>@ViewData["Title"]</h2>
+
+<div id="canvas-holder" style="width:80%">
+    <canvas id="chart-area"></canvas>
+</div>
+<a href="home/Meters">All Meters</a>
+@section scripts {
+    <script>
+
+
+    var config = {
+        type: 'pie',
+        data: {
+            datasets: [{
+                data: [
+                    @ViewData["activedevices"] ,  @ViewData["inactivedevices"]
+                ],
+                backgroundColor: [
+                    window.chartColors.green,
+                    window.chartColors.red
+                ],
+                label: 'Water Meters'
+            }],
+            labels: [
+                'Active Meters',
+                'In-Active Meters'
+            ]
+        },
+        options: {
+            responsive: true
+        }
+    };
+
+    window.onload = function () {
+        var ctx = document.getElementById('chart-area').getContext('2d');
+        window.myPie = new Chart(ctx, config);
+    };
+    </script>
+}
+

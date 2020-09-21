@@ -35,9 +35,9 @@ namespace SWMSB.WEB.Controllers
             return View(activeData);
         }
 
-        public IActionResult Contact(string deviceid)
+        public IActionResult WaterUsage(string id)
         {
-            ViewData["Message"] = "Your contact page.";
+            ViewData["Message"] = $"Water Usage -{id}";
 
             return View();
         }
