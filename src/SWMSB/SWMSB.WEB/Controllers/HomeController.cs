@@ -12,6 +12,7 @@ namespace SWMSB.WEB.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly int cacheRefreshRateInMinutes = 3;
         private readonly IIotHubManagerRepository IotHubManagerRepository;
         public HomeController(IIotHubManagerRepository _iotHubManagerRepository)
         {
@@ -19,8 +20,8 @@ namespace SWMSB.WEB.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            var activeData = await IotHubManagerRepository.GetDevicesForPieChart();
-            var totaldevices = await IotHubManagerRepository.GetTotalDevicesForPieChart();
+            var activeData = await IotHubManagerRepository.GetDevicesForPieChart(cacheRefreshRateInMinutes);
+            var totaldevices = await IotHubManagerRepository.GetTotalDevicesForPieChart(cacheRefreshRateInMinutes);
             ViewData["activedevices"] = activeData.Count;
             ViewData["inactivedevices"] = totaldevices - activeData.Count;
 
@@ -28,9 +29,9 @@ namespace SWMSB.WEB.Controllers
             return View(activeData);
         }
 
-        public async Task<IActionResult> ActiveMeters()
+        public async Task<IActionResult> Meters()
         {
-            var activeData = await IotHubManagerRepository.GetDevicesForPieChart();
+            var activeData = await IotHubManagerRepository.GetAllDevices(cacheRefreshRateInMinutes);
             return View(activeData);
         }
 

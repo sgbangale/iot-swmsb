@@ -18,8 +18,9 @@ namespace SWMSB.BAL
         Task<DeviceAttribute> UpdateDeviceTwinAsync(DeviceAttribute deviceAttribute);
         Task<DeviceAttribute> GetDeviceTwinAsync(DeviceAttribute deviceAttribute);
 
-        Task<List<IoTDevice>> GetDevicesForPieChart();
-        Task<int> GetTotalDevicesForPieChart();
+        Task<List<IoTDevice>> GetDevicesForPieChart(int cacheRefreshRateInMinutes);
+        Task<int> GetTotalDevicesForPieChart(int cacheRefreshRateInMinutes);
+        Task<List<IoTDevice>> GetAllDevices(int cacheRefreshRateInMinutes);
 
     }
 
@@ -130,39 +131,59 @@ namespace SWMSB.BAL
             }
         }
 
-        public async Task<List<IoTDevice>> GetDevicesForPieChart()
+        public async Task<List<IoTDevice>> GetDevicesForPieChart(int cacheRefreshRateInMinutes)
         {
-            if (!MemoryCache.Default.Contains("PIECHART_30_ACTIVE_METERS"))
+            if (!MemoryCache.Default.Contains("PIECHART_ACTIVE_METERS"))
             {
-               var activeDevices = await iotHubManager.GetDevicesAsync();
+               var activeDevices = await iotHubManager.GetDevicesByActiveTime(30);
 
-                MemoryCache.Default.Set(new CacheItem("PIECHART_30_ACTIVE_METERS", activeDevices), new CacheItemPolicy()
+                MemoryCache.Default.Set(new CacheItem("PIECHART_ACTIVE_METERS", activeDevices), new CacheItemPolicy()
                 {
-                    SlidingExpiration = new TimeSpan(0, minutes: 3, 0)
+                    AbsoluteExpiration = DateTimeOffset.UtcNow.AddMinutes(cacheRefreshRateInMinutes)
                 });
 
                 return activeDevices;
             }
             else
             {
-               return MemoryCache.Default.Get("PIECHART_30_ACTIVE_METERS") as List<IoTDevice>;
+               return MemoryCache.Default.Get("PIECHART_ACTIVE_METERS") as List<IoTDevice>;
 
             }
         }
 
-        public async Task<int> GetTotalDevicesForPieChart()
+        public async Task<List<IoTDevice>> GetAllDevices(int cacheRefreshRateInMinutes)
+        {
+            if (!MemoryCache.Default.Contains("ALL_METERS"))
+            {
+                var activeDevices = await iotHubManager.GetDevices();
+
+                MemoryCache.Default.Set(new CacheItem("ALL_METERS", activeDevices), new CacheItemPolicy()
+                {
+                    AbsoluteExpiration = DateTimeOffset.UtcNow.AddMinutes(cacheRefreshRateInMinutes)
+                });
+
+                return activeDevices;
+            }
+            else
+            {
+                return MemoryCache.Default.Get("ALL_METERS") as List<IoTDevice>;
+
+            }
+        }
+
+        public async Task<int> GetTotalDevicesForPieChart(int cacheRefreshRateInMinutes)
         {
             if (!MemoryCache.Default.Contains("TOTAL_DEVICES_COUNT"))
             {
 
-                var count = await iotHubManager.GetTotalDevices();
+                var devices = await iotHubManager.GetDevices();
 
-                MemoryCache.Default.Set(new CacheItem("TOTAL_DEVICES_COUNT", count), new CacheItemPolicy()
+                MemoryCache.Default.Set(new CacheItem("TOTAL_DEVICES_COUNT", devices.Count), new CacheItemPolicy()
                 {
-                    SlidingExpiration = new TimeSpan(0, minutes: 3, 0)
+                    AbsoluteExpiration = DateTimeOffset.UtcNow.AddMinutes(cacheRefreshRateInMinutes)
                 });
 
-                return count;
+                return devices.Count;
             }
             else
             {

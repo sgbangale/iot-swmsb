@@ -118,16 +118,22 @@ namespace SWMSB.PROVIDERS
             }
         }
 
-        public async Task<int> GetTotalDevices()
+        public async Task<List<IoTDevice>> GetDevices()
         {
-            var query = $"SELECT deviceId FROM devices";
+            var query = $"SELECT  deviceId,  lastActivityTime,tags.email,tags.apptno FROM devices";
             var devicequery = Manager.CreateQuery(query);
             var devices = await devicequery.GetNextAsJsonAsync();
-            return devices?.Count() ?? 0;
+            var result = devices?.Select(x =>
+            {
+                var device = JsonConvert.DeserializeObject<IoTDevice>(x);
+                return device ?? null;
+            }).ToList();
+
+            return result;
         }
-        public async Task<List<IoTDevice>> GetDevicesAsync()
+        public async Task<List<IoTDevice>> GetDevicesByActiveTime(int minutes)
         {
-            var date = DateTime.UtcNow.AddMinutes(-30).ToString("o");
+            var date = DateTime.UtcNow.AddMinutes(-minutes).ToString("o");
             var query = $"SELECT deviceId,  lastActivityTime,tags.email,tags.apptno FROM devices WHERE lastActivityTime > '{date}'";
             var devicequery = Manager.CreateQuery(query);
             var devices = await devicequery.GetNextAsJsonAsync();

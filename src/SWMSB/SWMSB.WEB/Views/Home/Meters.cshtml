@@ -1,6 +1,6 @@
 ﻿@model List<IoTDevice>
 @{
-    ViewData["Title"] = "Active Meters - Last 30 Minutes";
+    ViewData["Title"] = "Smart Water Meters";
 }
 <h2>@ViewData["Title"]</h2>
 
@@ -11,16 +11,18 @@
                 <th>Meter Id</th>
                 <th>Apartment No</th>
                 <th>Owner Email Address</th>
+                <th>Last Activity Time</th>
+
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model)
+            @foreach (var item in Model.OrderByDescending(x => x.LastActivityTime))
             {
                 <tr>
                     <td>@item.DeviceId</td>
                     <td>@item.Apptno</td>
                     <td>@item.Email</td>
-                    <td>@item.LastActivityTime</td>
+                    <td>@item.LastActivityTime.ToLocalTime()</td>
                 </tr>
             }
         </tbody>
@@ -29,9 +31,10 @@
 @section scripts {
     <script>
         $(document).ready(function () {
-            $('#table_id').DataTable();
+            $('#table_id').DataTable(
+                { "ordering": false }
+            );
         });
-
 
     </script>
 }
