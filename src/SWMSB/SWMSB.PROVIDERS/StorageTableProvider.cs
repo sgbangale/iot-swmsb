@@ -1,4 +1,5 @@
 ﻿using Microsoft.Azure.Cosmos.Table;
+using Newtonsoft.Json;
 using SWMSB.COMMON;
 using System;
 using System.Collections.Generic;
@@ -10,63 +11,17 @@ namespace SWMSB.PROVIDERS
 {
     public static class StorageTableExtension
     {
-        public static IList<dynamic> ToDynamicList(IEnumerable<DynamicTableEntity> dynamicTableEntities)
+        public static IList<TelemetryStorage> ToTelemetryList(IEnumerable<DynamicTableEntity> dynamicTableEntities)
         {
-            var list = new List<dynamic>();
-
-            var entityProperties = new HashSet<string>();
-            //iterate over all rows to collect all properties
-            foreach (var key in dynamicTableEntities.SelectMany(dynamicTableEntity => dynamicTableEntity.Properties.Keys))
-            {
-                entityProperties.Add(key);
-            }
-
+            var list = new List<TelemetryStorage>();
             foreach (var dynamicTableEntity in dynamicTableEntities)
             {
-                var dynamicObject = new ExpandoObject() as IDictionary<string, Object>;
-                dynamicObject.Add("PartitionKey", (dynamic)dynamicTableEntity.PartitionKey);
-                dynamicObject.Add("RowKey", (dynamic)dynamicTableEntity.RowKey);
-                dynamicObject.Add("ETag", (dynamic)dynamicTableEntity.ETag);
-                dynamicObject.Add("Timestamp", (dynamic)dynamicTableEntity.Timestamp);
-
-                foreach (var entityProperty in entityProperties)
-                {
-                    if (!dynamicTableEntity.Properties.ContainsKey(entityProperty))
-                    {
-                        dynamicObject.Add(entityProperty, (dynamic)string.Empty);
-                        continue;
-                    }
-
-                    var item = dynamicTableEntity.Properties[entityProperty];
-                    switch (item.PropertyType)
-                    {
-                        case EdmType.Binary:
-                            dynamicObject.Add(entityProperty, (dynamic)item.BinaryValue);
-                            break;
-                        case EdmType.Boolean:
-                            dynamicObject.Add(entityProperty, (dynamic)item.BooleanValue);
-                            break;
-                        case EdmType.DateTime:
-                            dynamicObject.Add(entityProperty, (dynamic)item.DateTimeOffsetValue);
-                            break;
-                        case EdmType.Double:
-                            dynamicObject.Add(entityProperty, (dynamic)item.DoubleValue);
-                            break;
-                        case EdmType.Guid:
-                            dynamicObject.Add(entityProperty, (dynamic)item.GuidValue);
-                            break;
-                        case EdmType.Int32:
-                            dynamicObject.Add(entityProperty, (dynamic)item.Int32Value);
-                            break;
-                        case EdmType.Int64:
-                            dynamicObject.Add(entityProperty, (dynamic)item.Int64Value);
-                            break;
-                        case EdmType.String:
-                            dynamicObject.Add(entityProperty, (dynamic)item.StringValue);
-                            break;
-                    }
-                }
-                list.Add(dynamicObject);
+                var item = new TelemetryStorage {
+                    PartitionKey = dynamicTableEntity.PartitionKey.ToString(),
+                    RowKey = dynamicTableEntity.RowKey.ToString(),
+                    DayWaterUsage =double.Parse(dynamicTableEntity.Properties["daywaterusage"].ToString())
+                };
+                list.Add(item);
             }
 
             return list;
@@ -75,17 +30,19 @@ namespace SWMSB.PROVIDERS
 
     public class StorageTableProvider<T> : ITable<T> where T : TableEntity, ITableEntity, new()
     {
+        public Config Config { get; }
+
         private readonly int maxPageSize;
         private readonly CloudTable cloudTable;
         private readonly CloudTableClient cloudTableClient;
 
         public StorageTableProvider(
-            string connectionString, string tableName)
+            Config config)
         {
-
+            Config = config;
             this.maxPageSize = 10;
 
-            var cloudStorageAccount = CloudStorageAccount.Parse(connectionString);
+            var cloudStorageAccount = CloudStorageAccount.Parse(config.BlobStorageConnectionString);
             var requestOptions = new TableRequestOptions
             {
                 RetryPolicy = new ExponentialRetry(TimeSpan.FromSeconds(1), 3)
@@ -93,14 +50,14 @@ namespace SWMSB.PROVIDERS
             cloudTableClient = cloudStorageAccount.CreateCloudTableClient();
             cloudTableClient.DefaultRequestOptions = requestOptions;
 
-            cloudTable = cloudTableClient.GetTableReference(tableName);
+            cloudTable = cloudTableClient.GetTableReference(config.StorageTelemetryTableName);
         }
         public void CreateEntity(T entity)
         {
             var insertOperation = TableOperation.Insert(entity);
             cloudTable.ExecuteAsync(insertOperation);
         }
-        public IEnumerable<T> GetEntitiesByPartitionKey(string partitionKey)
+        public async Task<IEnumerable<T>> GetEntitiesByPartitionKey(string partitionKey)
         {
             var query =
                 new TableQuery<T>()
@@ -109,8 +66,8 @@ namespace SWMSB.PROVIDERS
                         QueryComparisons.Equal,
                         partitionKey));
 
-            var result = cloudTable.ExecuteQuerySegmentedAsync(query, null);
-            return result.Result;
+            var result = await cloudTable.ExecuteQuerySegmentedAsync(query, null);
+            return result;
         }
         public IEnumerable<T> GetEntitiesByRowKey(string rowKey)
         {
@@ -213,6 +170,8 @@ namespace SWMSB.PROVIDERS
                 return null;
             }
         }
+
+        
     }
     public class TableResult<T> : TableEntity
     {
@@ -223,7 +182,7 @@ namespace SWMSB.PROVIDERS
     public interface ITable<T> where T : TableEntity, new()
     {
         void CreateEntity(T entity);
-        IEnumerable<T> GetEntitiesByPartitionKey(string partitionKey);
+        Task<IEnumerable<T>> GetEntitiesByPartitionKey(string partitionKey);
         IEnumerable<T> GetEntitiesByRowKey(string rowKey);
         Task<TableResult<T>> GetEntitiesByPartitionKeyWithContinuationTokenAsync(string partitionKey, TableContinuationToken token, int pageSize);
         Task<TableResult<T>> GetEntitiesByRowKeyWithContinuationTokenAsync(string rowKey, TableContinuationToken token);
@@ -232,53 +191,15 @@ namespace SWMSB.PROVIDERS
         Task<IList<TableResult>> Insert(T[] entities);
         Task<IEnumerable<DynamicTableEntity>> Query(string tableName, TableQuery query);
     }
-
-    public class BaseTableEntity : TableEntity
-    {
-        public BaseTableEntity()
-        {
-            RowKey = DateTime.UtcNow.EpochTime().ToString();
-        }
-    }
-
-    public class TelemetryStorage : BaseTableEntity
+    public class TelemetryStorage : TableEntity
     {
         public TelemetryStorage()
         {
 
         }
-        public string DeviceId { get; set; }
-        public string Type { get; set; }
-        public string WaterUsage { get; set; }
 
-        public long Epoch { get; set; }
+        [JsonProperty("Daywaterusage")]
+        public double DayWaterUsage { get; set; }
 
-
-        public static string GeneratePartitionKey(long messageGenerated)
-        {
-#if DEBUG
-            var dateNow = messageGenerated.EpochTimeToLocalDateTime();
-#else
-             var dateNow = messageGenerated.EpochTimeToUtcDateTime();
-
-#endif
-            var _partition = dateNow.Minute > 30 ?
-                new DateTime(dateNow.Year, dateNow.Month, dateNow.Day, dateNow.Hour, 30, 0, DateTimeKind.Utc) :
-                new DateTime(dateNow.Year, dateNow.Month, dateNow.Day, dateNow.Hour, 0, 0, DateTimeKind.Utc);
-
-            return string.Format("{0:s}", _partition);
-        }
-        public static string GeneratePartitionKey(DateTime dateNow)
-        {
-            var _partition = dateNow.Minute > 30 ?
-                new DateTime(dateNow.Year, dateNow.Month, dateNow.Day, dateNow.Hour, 30, 0, DateTimeKind.Utc) :
-                new DateTime(dateNow.Year, dateNow.Month, dateNow.Day, dateNow.Hour, 0, 0, DateTimeKind.Utc);
-
-            return string.Format("{0:s}", _partition);
-        }
-        public static string GenerateRowKey(string deviceId, long epoch)
-        {
-            return $"{deviceId}_{epoch}";
-        }
     }
 }

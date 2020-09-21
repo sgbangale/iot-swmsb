@@ -6,22 +6,41 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SWMSB.BAL;
 using SWMSB.COMMON;
+using SWMSB.PROVIDERS;
 using SWMSB.WEB.Models;
 
 namespace SWMSB.WEB.Controllers
 {
+   
+  
     public class HomeController : Controller
     {
+        readonly string[] Months = {
+            "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+        };
         private readonly int cacheRefreshRateInMinutes = 3;
-        private readonly IIotHubManagerRepository IotHubManagerRepository;
-        public HomeController(IIotHubManagerRepository _iotHubManagerRepository)
+        private readonly IBackendRepository backendRepository;
+        private readonly IIotHubManagerRepository iotHubManagerRepository;
+        public HomeController(IIotHubManagerRepository _iotHubManagerRepository,IBackendRepository _backendRepository)
         {
-            IotHubManagerRepository = _iotHubManagerRepository;
+            backendRepository = _backendRepository;
+            iotHubManagerRepository = _iotHubManagerRepository;
         }
         public async Task<IActionResult> Index()
         {
-            var activeData = await IotHubManagerRepository.GetDevicesForPieChart(cacheRefreshRateInMinutes);
-            var totaldevices = await IotHubManagerRepository.GetTotalDevicesForPieChart(cacheRefreshRateInMinutes);
+            var activeData = await iotHubManagerRepository.GetDevicesForPieChart(cacheRefreshRateInMinutes);
+            var totaldevices = await iotHubManagerRepository.GetTotalDevicesForPieChart(cacheRefreshRateInMinutes);
             ViewData["activedevices"] = activeData.Count;
             ViewData["inactivedevices"] = totaldevices - activeData.Count;
 
@@ -31,15 +50,31 @@ namespace SWMSB.WEB.Controllers
 
         public async Task<IActionResult> Meters()
         {
-            var activeData = await IotHubManagerRepository.GetAllDevices(cacheRefreshRateInMinutes);
+            var activeData = await iotHubManagerRepository.GetAllDevices(cacheRefreshRateInMinutes);
             return View(activeData);
         }
 
-        public IActionResult WaterUsage(string id)
+        public async Task<IActionResult> WaterUsage(string id)
         {
-            ViewData["Message"] = $"Water Usage -{id}";
 
-            return View();
+            ViewData["Message"] = $"Water Usage -{id}";
+            var result = await backendRepository.GetWaterUsageAsync(id, cacheRefreshRateInMinutes);
+            List<MonthlyData> yrdata = new List<MonthlyData>();
+            var currentyr = DateTime.UtcNow.Year;
+            if (result?.Any()?? false)
+            {
+                foreach (var item in Months)
+                {
+                    var key = $"{item}-{currentyr}";
+                    var data = result.Where(x => x.RowKey.StartsWith(key)).ToList();
+                    if (data?.Any()?? false)
+                    {
+                        yrdata.Add(new MonthlyData {MonthYr = key,Data = data } );
+                    }
+                }
+         
+            }
+            return View(yrdata);
         }
 
         public IActionResult Privacy()

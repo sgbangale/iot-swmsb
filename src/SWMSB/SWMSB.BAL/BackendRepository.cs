@@ -1,10 +1,12 @@
-﻿using Microsoft.Azure.EventHubs;
+﻿using Microsoft.Azure.Cosmos.Table;
+using Microsoft.Azure.EventHubs;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SWMSB.COMMON;
 using SWMSB.DEVICE;
 using SWMSB.PROVIDERS;
 using System;
+using System.Collections.Generic;
 using System.Runtime.Caching;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +19,8 @@ namespace SWMSB.BAL
         Task<bool> RegisterDeviceBackendRequest(DeviceRequest msg);
         Task<bool> SendLeakEmailAsync(Alert alert);
         Task<bool> SendUsageExhaustEmailAsync(Alert alert);
+
+        Task<IEnumerable<TelemetryStorage>> GetWaterUsageAsync(string deviceId, int cacheRefreshRateInMinutes);
 
 
     }
@@ -37,7 +41,7 @@ namespace SWMSB.BAL
 
         private async Task<IoTHubDeviceResultStatus> HandleRegisterDeviceRequestAsync(DeviceRequest payload)
         {
-           
+
             var result = await Manager.AddDeviceAsync(payload.DeviceId);
 
             if (result == IoTHubDeviceResultStatus.DEVICE_CREATED)
@@ -194,5 +198,37 @@ namespace SWMSB.BAL
                 return false;
             }
         }
+
+        public async Task<IEnumerable<TelemetryStorage>> GetWaterUsageAsync(string deviceId, int cacheRefreshRateInMinutes)
+        {
+            string cachekey = $"DEVICE_{deviceId}_WATERUSAGE";
+            if (!MemoryCache.Default.Contains(cachekey))
+            {
+
+                var storageTableProvider = new StorageTableProvider<TelemetryStorage>(Config);
+                var query =
+             new TableQuery()
+                 .Where(
+
+                 TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, deviceId)
+
+                 );
+                var devicedata  = await storageTableProvider.Query(Config.StorageTelemetryTableName, query);
+                var devicedataDynamicList = StorageTableExtension.ToTelemetryList(devicedata);
+
+                MemoryCache.Default.Set(new CacheItem(cachekey, devicedataDynamicList), new CacheItemPolicy()
+                {
+                    AbsoluteExpiration = DateTimeOffset.UtcNow.AddMinutes(cacheRefreshRateInMinutes)
+                });
+
+                return devicedataDynamicList;
+            }
+            else
+            {
+                return MemoryCache.Default.Get(cachekey) as IEnumerable<TelemetryStorage>;
+            }
+
+        }
+
     }
 }
