@@ -28,11 +28,10 @@ namespace SWMSB.WEB.Controllers
             return View(activeData);
         }
 
-        public IActionResult About()
+        public async Task<IActionResult> ActiveMeters()
         {
-            ViewData["Message"] = "Your application description page.";
-
-            return View();
+            var activeData = await IotHubManagerRepository.GetDevicesForPieChart();
+            return View(activeData);
         }
 
         public IActionResult Contact()

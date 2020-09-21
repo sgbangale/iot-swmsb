@@ -1,0 +1,38 @@
+﻿@model List<IoTDevice>
+@{
+    ViewData["Title"] = "Active Meters - Last 30 Minutes";
+}
+<h2>@ViewData["Title"]</h2>
+
+<div>
+    <table id="table_id" class="display">
+        <thead>
+            <tr>
+                <th>Meter Id</th>
+                <th>Apartment No</th>
+                <th>Owner Email Address</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.DeviceId</td>
+                    <td>@item.Apptno</td>
+                    <td>@item.Email</td>
+                    <td>@item.LastActivityTime</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            $('#table_id').DataTable();
+        });
+
+
+    </script>
+}
+

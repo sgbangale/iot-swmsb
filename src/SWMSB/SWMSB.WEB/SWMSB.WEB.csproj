@@ -15,4 +15,10 @@
     <ProjectReference Include="..\SWMSB.COMMON\SWMSB.COMMON.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Views\Home\ActiveMeters.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+  </ItemGroup>
+
 </Project>
