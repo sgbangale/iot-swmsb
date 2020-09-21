@@ -4,6 +4,7 @@ using SWMSB.COMMON;
 using SWMSB.DEVICE;
 using SWMSB.PROVIDERS;
 using System;
+using System.Collections.Generic;
 using System.Runtime.Caching;
 using System.Threading.Tasks;
 
@@ -16,6 +17,10 @@ namespace SWMSB.BAL
         Task<IoTHubDeviceResultStatus> SendEventAsync(TTNUpLinkPayload ttnPayload);
         Task<DeviceAttribute> UpdateDeviceTwinAsync(DeviceAttribute deviceAttribute);
         Task<DeviceAttribute> GetDeviceTwinAsync(DeviceAttribute deviceAttribute);
+
+        Task<List<IoTDevice>> GetDevicesForPieChart();
+        Task<int> GetTotalDevicesForPieChart();
+
     }
 
     public sealed class IotHubManagerRepository : IIotHubManagerRepository
@@ -123,6 +128,47 @@ namespace SWMSB.BAL
             {
                 return JsonConvert.DeserializeObject<DeviceAttribute>(cache.Value.ToString());
             }
+        }
+
+        public async Task<List<IoTDevice>> GetDevicesForPieChart()
+        {
+            if (!MemoryCache.Default.Contains("PIECHART_30_ACTIVE_METERS"))
+            {
+               var activeDevices = await iotHubManager.GetDevicesAsync();
+
+                MemoryCache.Default.Set(new CacheItem("PIECHART_30_ACTIVE_METERS", activeDevices), new CacheItemPolicy()
+                {
+                    SlidingExpiration = new TimeSpan(0, minutes: 3, 0)
+                });
+
+                return activeDevices;
+            }
+            else
+            {
+               return MemoryCache.Default.Get("PIECHART_30_ACTIVE_METERS") as List<IoTDevice>;
+
+            }
+        }
+
+        public async Task<int> GetTotalDevicesForPieChart()
+        {
+            if (!MemoryCache.Default.Contains("TOTAL_DEVICES_COUNT"))
+            {
+
+                var count = await iotHubManager.GetTotalDevices();
+
+                MemoryCache.Default.Set(new CacheItem("TOTAL_DEVICES_COUNT", count), new CacheItemPolicy()
+                {
+                    SlidingExpiration = new TimeSpan(0, minutes: 3, 0)
+                });
+
+                return count;
+            }
+            else
+            {
+                return int.Parse(MemoryCache.Default.Get("TOTAL_DEVICES_COUNT")?.ToString());
+            }
+
         }
     }
 }

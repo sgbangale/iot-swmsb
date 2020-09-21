@@ -1,7 +1,11 @@
 ﻿using Microsoft.Azure.Devices;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using SWMSB.COMMON;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Caching;
 using System.Threading.Tasks;
 
 namespace SWMSB.PROVIDERS
@@ -112,6 +116,30 @@ namespace SWMSB.PROVIDERS
                     await Task.Delay(randomDelay.Next(1000, 2000));
                 }
             }
+        }
+
+        public async Task<int> GetTotalDevices()
+        {
+            var query = $"SELECT deviceId FROM devices";
+            var devicequery = Manager.CreateQuery(query);
+            var devices = await devicequery.GetNextAsJsonAsync();
+            return devices?.Count() ?? 0;
+        }
+        public async Task<List<IoTDevice>> GetDevicesAsync()
+        {
+            var date = DateTime.UtcNow.AddMinutes(-30).ToString("o");
+            var query = $"SELECT deviceId,  lastActivityTime,tags.email,tags.apptno FROM devices WHERE lastActivityTime > '{date}'";
+            var devicequery = Manager.CreateQuery(query);
+            var devices = await devicequery.GetNextAsJsonAsync();
+            var deviceData = devices.ToList();
+
+            var result = deviceData?.Select(x =>
+            {
+                var device = JsonConvert.DeserializeObject<IoTDevice>(x);
+                return device ?? null;
+            }).ToList();
+
+            return result;
         }
 
     }

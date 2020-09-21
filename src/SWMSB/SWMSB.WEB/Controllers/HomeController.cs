@@ -4,15 +4,28 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SWMSB.BAL;
+using SWMSB.COMMON;
 using SWMSB.WEB.Models;
 
 namespace SWMSB.WEB.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        private readonly IIotHubManagerRepository IotHubManagerRepository;
+        public HomeController(IIotHubManagerRepository _iotHubManagerRepository)
         {
-            return View();
+            IotHubManagerRepository = _iotHubManagerRepository;
+        }
+        public async Task<IActionResult> Index()
+        {
+            var activeData = await IotHubManagerRepository.GetDevicesForPieChart();
+            var totaldevices = await IotHubManagerRepository.GetTotalDevicesForPieChart();
+            ViewData["activedevices"] = activeData.Count;
+            ViewData["inactivedevices"] = totaldevices - activeData.Count;
+
+
+            return View(activeData);
         }
 
         public IActionResult About()

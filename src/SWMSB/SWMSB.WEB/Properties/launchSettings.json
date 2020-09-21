@@ -1,7 +1,7 @@
-﻿{
+{
   "iisSettings": {
-    "windowsAuthentication": false, 
-    "anonymousAuthentication": true, 
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
     "iisExpress": {
       "applicationUrl": "http://localhost:62689",
       "sslPort": 44313
@@ -12,16 +12,35 @@
       "commandName": "IISExpress",
       "launchBrowser": true,
       "environmentVariables": {
+        "SENDGRID_API_KEY": "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",
+        "TTN_DOWNLINK_URL": "https://integrations.thethingsnetwork.org/ttn-eu/api/v2/down/swmsb/swmsbintegration?key=ttn-account-v2.N1xJ3W2zKg9WjHzBl6ngZBfTJvS3oh4ZsJoO341zB0k",
+        "BACKEND_REQUEST_ENTITY_PATH": "device-swmsb-requests",
+        "IOT_HUB_CS": "HostName=SWMSB-IN-SWM.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=StGNyeYEpBhdPiA3ChW4dsEI9luXhE//5iVpFhXvwN0=",
+        "TTN_API_KEY": "ttn-account-v2.N1xJ3W2zKg9WjHzBl6ngZBfTJvS3oh4ZsJoO341zB0k",
+        "TTN_DATA_STORAGE_ENDPOINT": "https://swmsb.data.thethingsnetwork.org",
+        "ConsumerGroupName": "$Default",
+        "TwinEventHubName": "device-swmsb-twin",
+        "MsgEventHubName": "device-swmsb-msg",
+        "DocumentDbEndpointUrl": "https://swmsb-data.documents.azure.com:443/",
+        "DocumentDbName": "swmsb-database",
+        "DocumentCollectionName": "swmsb-devicedata",
+        "DocumentDbAuthorizationKey": "ahuWGgyvG0dnpPFlcTkd58vEXUH0mLb9bK6ZRcpAGBhs0GqL48cPr4dbW6Up7OFhiEbJV3IYLoblxF0oklYyQQ==",
+        "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=swmsbprocessorsstorage;AccountKey=UQRrhztnUxbZZJ8PmGakEd7CJcRxhhy49p+eWYMVvBrnHI6HC9qH17F5QT6Z9BKi+n/mw8r4L601mPEeYN1uUg==",
+        "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+        "EventHubEndPoint": "Endpoint=sb://swmsb-events.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=aLceJlRSSTsF9xrUEcIXzHpuvWNNgP6HygicUPKRmtg=",
+        "BlobStorageConnectionString": "DefaultEndpointsProtocol=https;AccountName=swmsbprocessorsstorage;AccountKey=UQRrhztnUxbZZJ8PmGakEd7CJcRxhhy49p+eWYMVvBrnHI6HC9qH17F5QT6Z9BKi+n/mw8r4L601mPEeYN1uUg==;EndpointSuffix=core.windows.net",
+        "StorageTelemetryTableName": "swmsbtlm",
+        "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
     "SWMSB.WEB": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "https://localhost:5001;http://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "applicationUrl": "https://localhost:5001;http://localhost:5000"
     }
   }
 }

@@ -9,14 +9,24 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using SWMSB.BAL;
+using SWMSB.COMMON;
 
 namespace SWMSB.WEB
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IHostingEnvironment env)
         {
-            Configuration = configuration;
+            var builder = new ConfigurationBuilder()
+        .SetBasePath(env.ContentRootPath)
+        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+        .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
+        .AddEnvironmentVariables();
+
+            Configuration = builder.Build();
+
         }
 
         public IConfiguration Configuration { get; }
@@ -31,8 +41,17 @@ namespace SWMSB.WEB
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-
+            var serviceProvider = services.BuildServiceProvider();
+            var logger = serviceProvider.GetService<ILogger<ApplicationLog>>();
+            services.AddSingleton(typeof(ILogger), logger);
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            services.AddSingleton<Config>();
+            services.AddTransient<IBackendRepository, BackendRepository>();
+            services.AddTransient<IIotHubManagerRepository, IotHubManagerRepository>();
+
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

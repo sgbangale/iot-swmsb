@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace SWMSB.COMMON
@@ -51,6 +52,30 @@ namespace SWMSB.COMMON
 
         public string AppartmentOwnerEmail { get; set; }
         public string Etag { get; set; }
+        public string ToIntendedJsonString()
+        {
+            return JsonConvert.SerializeObject(this, Formatting.Indented);
+        }
+
+    }
+
+    public class IoTDevice
+    {
+        // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse); 
+
+        [JsonProperty("deviceId")]
+        public string DeviceId { get; set; }
+
+        [JsonProperty("lastActivityTime")]
+        public DateTime LastActivityTime { get; set; }
+
+        [JsonProperty("email")]
+        public string Email { get; set; }
+
+        [JsonProperty("apptno")]
+        public string Apptno { get; set; }
+
+
         public string ToIntendedJsonString()
         {
             return JsonConvert.SerializeObject(this, Formatting.Indented);
