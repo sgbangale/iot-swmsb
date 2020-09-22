@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using SWMSB.PROVIDERS;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,14 @@ namespace SWMSB.WEB.Models
             Data = new List<TelemetryStorage>();
         }
 
+        public string   DeviceId { get; set; }
         public string MonthYr { get; set; }
+        public double TotalWaterUsage { get; set; }
+        public double AvgWaterUsage { get; set; }
+        public string ToIntendedJsonString()
+        {
+            return JsonConvert.SerializeObject(this, Formatting.Indented);
+        }
     }
     public class ErrorViewModel
     {

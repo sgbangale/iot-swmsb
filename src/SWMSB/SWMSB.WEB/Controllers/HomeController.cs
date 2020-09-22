@@ -11,8 +11,8 @@ using SWMSB.WEB.Models;
 
 namespace SWMSB.WEB.Controllers
 {
-   
-  
+
+
     public class HomeController : Controller
     {
         readonly string[] Months = {
@@ -32,7 +32,7 @@ namespace SWMSB.WEB.Controllers
         private readonly int cacheRefreshRateInMinutes = 3;
         private readonly IBackendRepository backendRepository;
         private readonly IIotHubManagerRepository iotHubManagerRepository;
-        public HomeController(IIotHubManagerRepository _iotHubManagerRepository,IBackendRepository _backendRepository)
+        public HomeController(IIotHubManagerRepository _iotHubManagerRepository, IBackendRepository _backendRepository)
         {
             backendRepository = _backendRepository;
             iotHubManagerRepository = _iotHubManagerRepository;
@@ -54,25 +54,28 @@ namespace SWMSB.WEB.Controllers
             return View(activeData);
         }
 
-        public async Task<IActionResult> WaterUsage(string id)
+        public async Task<IActionResult> WaterUsage(string id, int year)
         {
 
-            ViewData["Message"] = $"Water Usage -{id}";
+            ViewData["Title"] = $"Water Usage - {id}";
             var result = await backendRepository.GetWaterUsageAsync(id, cacheRefreshRateInMinutes);
             List<MonthlyData> yrdata = new List<MonthlyData>();
-            var currentyr = DateTime.UtcNow.Year;
-            if (result?.Any()?? false)
+            var currentyr = year == 0 ? DateTime.UtcNow.Year : year;
+            if (result?.Any() ?? false)
             {
                 foreach (var item in Months)
                 {
                     var key = $"{item}-{currentyr}";
                     var data = result.Where(x => x.RowKey.StartsWith(key)).ToList();
-                    if (data?.Any()?? false)
-                    {
-                        yrdata.Add(new MonthlyData {MonthYr = key,Data = data } );
-                    }
+                    yrdata.Add(new MonthlyData {
+                        DeviceId = id,
+                        MonthYr = key, Data = data,
+                        TotalWaterUsage = data.Any() ? data.Sum(x => x.DayWaterUsage) : 0,
+                        AvgWaterUsage = data.Any() ? data.Average(x => x.DayWaterUsage) : 0
+                    });
+
                 }
-         
+
             }
             return View(yrdata);
         }
