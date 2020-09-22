@@ -128,30 +128,18 @@ namespace SWMSB.BAL
                 IotHubManagerRepository iotHubManagerRepository = new IotHubManagerRepository(Config, logger);
                 var data = await iotHubManagerRepository.GetDeviceTwinAsync(new DeviceAttribute { DeviceId = alert.DevId });
                 EmailProvider emailProvider = new EmailProvider(Config, logger);
-                var key = $"LEAK:{alert.DevId}";
-                if (MemoryCache.Default.Contains(key))
-                {
-                    var emailresult = await emailProvider.SendEmail(
-                               new EmailMsg
-                               {
-                                   EmailBody = $"Please check the water leak/tap closure in Apt no:{data.Appartment} ",
-                                   Subject = "Smart Water Meter Leak Alert",
-                                   ReceiverEmail = data.AppartmentOwnerEmail,
-                                   ReceiverName = data.AppartmentOwnerEmail
-                               });
 
-                    if (emailresult)
-                    {
-                        MemoryCache.Default.Add(new CacheItem(key, alert.ToIntendedJsonString()), new CacheItemPolicy()
-                        {
-                            AbsoluteExpiration = DateTimeOffset.Now.AddHours(1)
-                        });
-                    }
+                var emailresult = await emailProvider.SendEmail(
+                           new EmailMsg
+                           {
+                               EmailBody = $"Please check the water leak/tap closure in Apt no:{data.Appartment} ",
+                               Subject = "Smart Water Meter Leak Alert",
+                               ReceiverEmail = data.AppartmentOwnerEmail,
+                               ReceiverName = data.AppartmentOwnerEmail
+                           });
 
-                    return emailresult;
-                }
 
-                return false;
+                return emailresult;
             }
             catch (Exception ex)
             {
@@ -168,29 +156,18 @@ namespace SWMSB.BAL
                 IotHubManagerRepository iotHubManagerRepository = new IotHubManagerRepository(Config, logger);
                 var data = await iotHubManagerRepository.GetDeviceTwinAsync(new DeviceAttribute { DeviceId = alert.DevId });
                 EmailProvider emailProvider = new EmailProvider(Config, logger);
-                var key = $"EXHAUST:{alert.DevId}";
-                if (MemoryCache.Default.Contains(key))
-                {
-                    var emailresult = await emailProvider.SendEmail(
-                             new EmailMsg
-                             {
-                                 EmailBody = $" Your consumption limit has reached the maximum limit for the day",
-                                 Subject = $"Smart Water Usage Capacity Exhausted for {data.Appartment}",
-                                 ReceiverEmail = data.AppartmentOwnerEmail,
-                                 ReceiverName = data.AppartmentOwnerEmail
-                             });
-                    if (emailresult)
-                    {
-                        MemoryCache.Default.Add(new CacheItem(key, alert.ToIntendedJsonString()), new CacheItemPolicy()
-                        {
-                            AbsoluteExpiration = DateTimeOffset.Now.AddHours(24)
-                        });
-                    }
+                var emailresult = await emailProvider.SendEmail(
+                         new EmailMsg
+                         {
+                             EmailBody = $" Your consumption limit has reached the maximum limit for the day",
+                             Subject = $"Smart Water Usage Capacity Exhausted for {data.Appartment}",
+                             ReceiverEmail = data.AppartmentOwnerEmail,
+                             ReceiverName = data.AppartmentOwnerEmail
+                         });
 
-                    return emailresult;
-                }
 
-                return false;
+                return emailresult;
+
             }
             catch (Exception ex)
             {
@@ -213,7 +190,7 @@ namespace SWMSB.BAL
                  TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, deviceId)
 
                  );
-                var devicedata  = await storageTableProvider.Query(Config.StorageTelemetryTableName, query);
+                var devicedata = await storageTableProvider.Query(Config.StorageTelemetryTableName, query);
                 var devicedataDynamicList = StorageTableExtension.ToTelemetryList(devicedata);
 
                 MemoryCache.Default.Set(new CacheItem(cachekey, devicedataDynamicList), new CacheItemPolicy()
