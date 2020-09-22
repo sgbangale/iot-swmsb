@@ -1,0 +1,19 @@
+﻿@{
+    ViewData["Title"] = "Active Meters - Last 30 Minutes";
+}
+<h2>@ViewData["Title"]</h2>
+
+<div class="content">
+    <h3>Update Details for @ViewBag.DeviceId</h3>
+    <form asp-controller="Home" asp-action="UpdateDetails" method="post">
+        <input type="hidden" id="deviceid" name="deviceid" value="@ViewBag.DeviceId" />
+        <label for="apptno">Apartment No</label>
+        <input type="text" id="apptno" name="apptno" />
+        <label for="email">Owner Email</label>
+        <input type="email" id="email" name="email" />
+        <button class="btn btn-primary">Update Details</button>
+    </form>
+    <div class="toolbar">
+        <a href="home/Meters">All Meters</a>
+    </div>
+</div>

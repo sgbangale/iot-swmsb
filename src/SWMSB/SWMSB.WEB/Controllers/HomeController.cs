@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using SWMSB.BAL;
 using SWMSB.COMMON;
 using SWMSB.PROVIDERS;
@@ -32,8 +33,14 @@ namespace SWMSB.WEB.Controllers
         private readonly int cacheRefreshRateInMinutes = 1;
         private readonly IBackendRepository backendRepository;
         private readonly IIotHubManagerRepository iotHubManagerRepository;
-        public HomeController(IIotHubManagerRepository _iotHubManagerRepository, IBackendRepository _backendRepository)
+        private Config config;
+        private readonly ILogger logger;
+
+        public HomeController(IIotHubManagerRepository _iotHubManagerRepository, IBackendRepository _backendRepository,
+            Config _config, ILogger _logger)
         {
+            config = _config;
+            logger = _logger;
             backendRepository = _backendRepository;
             iotHubManagerRepository = _iotHubManagerRepository;
         }
@@ -82,6 +89,8 @@ namespace SWMSB.WEB.Controllers
 
         public async Task<IActionResult> DailyWaterUsage(string deviceid, string monthyear)
         {
+            ViewBag.DeviceId = deviceid;
+
             DailyWaterUsage dailyWaterUsage = new DailyWaterUsage { DeviceId = deviceid, MonthYr = monthyear };
             var result = await backendRepository.GetWaterUsageAsync(deviceid, cacheRefreshRateInMinutes);
             if (result?.Any() ?? false)
@@ -109,6 +118,28 @@ namespace SWMSB.WEB.Controllers
             }
 
             return View(dailyWaterUsage);
+        }
+        [HttpGet]
+        public IActionResult UpdateDetails(string id)
+        {
+            ViewBag.DeviceId = id;
+
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateDetails(string id, string email, string apptno)
+        {
+
+            var result = await iotHubManagerRepository.UpdateDeviceTwinAsync(new DeviceAttribute { Appartment = apptno, AppartmentOwnerEmail = email, DeviceId = id });
+            if (result != null)
+            {
+                IoTDeviceProvider.SendDownlink(config,
+                    new DEVICE.TTNDownLinkPayload
+                    { DevId = id, PayloadFields = new DEVICE.PayloadFields { Reset =true }, Confirmed = true, Port = 1 }
+                    , logger);
+            }
+            return RedirectToAction("Meters");
         }
 
         public IActionResult Privacy()

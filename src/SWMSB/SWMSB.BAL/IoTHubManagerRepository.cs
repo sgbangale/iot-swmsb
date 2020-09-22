@@ -22,6 +22,7 @@ namespace SWMSB.BAL
         Task<int> GetTotalDevicesForPieChart(int cacheRefreshRateInMinutes);
         Task<List<IoTDevice>> GetAllDevices(int cacheRefreshRateInMinutes);
 
+
     }
 
     public sealed class IotHubManagerRepository : IIotHubManagerRepository

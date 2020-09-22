@@ -16,6 +16,8 @@ namespace SWMSB.DEVICE
         [JsonProperty("waterusage")]
         [Range(0.1, 1000)]
         public double Waterusage { get; set; }
+        [JsonProperty("reset")]
+        public bool Reset{ get; set; }
     }
 
     public class Metadata
@@ -27,19 +29,18 @@ namespace SWMSB.DEVICE
     public class TTNDownLinkPayload
     {
         [Required]
-        [JsonProperty("payload_raw")]
-        public string PayloadRaw { get; set; }
-
-        [Required]
         [JsonProperty("confirmed")]
         public bool Confirmed { get; set; }
         [Required]
 
         [JsonProperty("port")]
-        public string Port { get; set; }
+        public int Port { get; set; }
         [Required]
         [JsonProperty("dev_id")]
         public string DevId { get; set; }
+        [Required]
+        [JsonProperty("payload_fields")]
+        public PayloadFields PayloadFields { get; set; }
         public string ToIntendedJsonString()
         {
             if (this == null)

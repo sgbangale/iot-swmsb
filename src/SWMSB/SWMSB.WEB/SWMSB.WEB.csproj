@@ -20,6 +20,9 @@
     <Content Update="Views\Home\DailyWaterUsage.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="Views\Home\UpdateDetails.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Views\Home\WaterUsage.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>

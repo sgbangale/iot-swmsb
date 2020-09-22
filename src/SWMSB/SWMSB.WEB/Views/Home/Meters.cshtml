@@ -13,6 +13,7 @@
                 <th>Owner Email Address</th>
                 <th>Last Activity Time</th>
                 <th>View Water Consumption</th>
+                <th>Actions</th>
 
             </tr>
         </thead>
@@ -25,6 +26,7 @@
                 <td>@item.Email</td>
                 <td>@TimeZoneInfo.ConvertTimeFromUtc(item.LastActivityTime, TimeZoneInfo.FindSystemTimeZoneById("India Standard Time"))</td>
                 <td><a asp-action="WaterUsage" asp-route-id="@item.DeviceId"><button class="btn btn-primary">View</button></a></td>
+                <td><a asp-action="UpdateDetails" asp-route-id="@item.DeviceId"><button class="btn btn-primary">Update Details</button></a></td>
             </tr>
             }
         </tbody>
