@@ -138,6 +138,8 @@ namespace SWMSB.WEB.Controllers
                     new DEVICE.TTNDownLinkPayload
                     { DevId = id, PayloadFields = new DEVICE.PayloadFields { Reset =true }, Confirmed = true, Port = 1 }
                     , logger);
+                     MemoryCache.Default.Remove(id);
+                MemoryCache.Default.Remove("ALL_METERS");
             }
             return RedirectToAction("Meters");
         }
