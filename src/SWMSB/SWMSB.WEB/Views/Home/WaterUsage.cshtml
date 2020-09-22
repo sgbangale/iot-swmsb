@@ -1,14 +1,34 @@
 ﻿@model List<MonthlyData>
 @{
-
+    ViewData["Title"] = "Water Usage";
 }
 <h2>@ViewData["Title"]</h2>
 
 <div class="content">
-
-    <div style="width:90%;">
+    <div style="width:100%;">
         <canvas id="canvas"></canvas>
     </div>
+    <br />
+    <br />
+    <form asp-controller="Home" asp-action="DailyWaterUsage" method="post">
+        <input type="hidden" id="deviceid" name="deviceid" value="@ViewBag.DeviceId" />
+        <label for="monthyear">Choose Month:</label>
+        <select id="monthyear" name="monthyear">
+            <option value="@Model[0].MonthYr">@Model[0].MonthYr</option>
+            <option value="@Model[1].MonthYr">@Model[1].MonthYr</option>
+            <option value="@Model[2].MonthYr">@Model[2].MonthYr</option>
+            <option value="@Model[3].MonthYr">@Model[3].MonthYr</option>
+            <option value="@Model[4].MonthYr">@Model[4].MonthYr</option>
+            <option value="@Model[5].MonthYr">@Model[5].MonthYr</option>
+            <option value="@Model[6].MonthYr">@Model[6].MonthYr</option>
+            <option value="@Model[7].MonthYr">@Model[7].MonthYr</option>
+            <option value="@Model[8].MonthYr">@Model[8].MonthYr</option>
+            <option value="@Model[9].MonthYr">@Model[9].MonthYr</option>
+            <option value="@Model[10].MonthYr">@Model[10].MonthYr</option>
+            <option value="@Model[11].MonthYr">@Model[11].MonthYr</option>
+        </select>
+        <button class="btn btn-primary">View Daily Water usage</button>
+    </form>
 </div>
 @section scripts {
 
@@ -50,6 +70,26 @@
                 '@Model[11].TotalWaterUsage'
                 ],
                 yAxisID: 'y-axis-1',
+            }, {
+                label: 'Average Monthly Usage Data',
+                borderColor: window.chartColors.blue,
+                backgroundColor: window.chartColors.blue,
+                fill: false,
+                data: [
+                '@Model[0].AvgWaterUsage',
+                '@Model[1].AvgWaterUsage',
+                '@Model[2].AvgWaterUsage',
+                '@Model[3].AvgWaterUsage',
+                '@Model[4].AvgWaterUsage',
+                '@Model[5].AvgWaterUsage',
+                '@Model[6].AvgWaterUsage',
+                '@Model[7].AvgWaterUsage',
+                '@Model[8].AvgWaterUsage',
+                '@Model[9].AvgWaterUsage',
+                '@Model[10].AvgWaterUsage',
+                '@Model[11].AvgWaterUsage'
+                ],
+                yAxisID: 'y-axis-2'
             }]
         };
 
@@ -71,6 +111,16 @@
                             display: true,
                             position: 'left',
                             id: 'y-axis-1',
+                        }, {
+                            type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+                            display: true,
+                            position: 'right',
+                            id: 'y-axis-2',
+
+                            // grid line settings
+                            gridLines: {
+                                drawOnChartArea: false, // only want the grid lines for one axis to show up
+                            },
                         }],
                     }
                 }

@@ -24,7 +24,7 @@ FROM iothub AS IOT
 group by dev_id, TumblingWindow(hour,24)) as dayalertT
 where waterusage >= 1000
 
-select rowkey,sum(waterusage) as daywaterusage,partitionkey
+select rowkey,sum(waterusage) as daywaterusage,avg(waterusage),partitionkey
 into daydatastorage
 from(
 select dev_id as partitionkey,waterusage,
@@ -35,3 +35,6 @@ FROM iothub AS IOT
 ) as usage
 ) as dayalertT
 group by rowkey,partitionkey,TumblingWindow(hour,24)
+
+
+

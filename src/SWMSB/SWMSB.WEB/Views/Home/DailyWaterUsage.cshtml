@@ -1,0 +1,81 @@
+﻿@model DailyWaterUsage
+@{
+    ViewData["Title"] = "Water Usage";
+}
+<h2>@ViewData["Title"]</h2>
+
+<div class="content">
+    <div style="width:100%;">
+        <canvas id="canvas"></canvas>
+    </div>
+    <br />
+    <br />
+
+</div>
+@section scripts {
+
+    <script>
+        var days = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
+
+        var monthyr= ''
+        var lineChartData = {
+            labels:days,
+            datasets: [{
+                label: 'Monthly Usage Data',
+                borderColor: window.chartColors.red,
+                backgroundColor: window.chartColors.red,
+                fill: false,
+                data: [
+             @Model.DailySumWaterUsage
+                ],
+                yAxisID: 'y-axis-1',
+            }, {
+                label: 'Average Monthly Usage Data',
+                borderColor: window.chartColors.blue,
+                backgroundColor: window.chartColors.blue,
+                fill: false,
+                data: [
+               @Model.DailyAvgWaterUsage
+                ],
+                yAxisID: 'y-axis-2'
+            }]
+        };
+
+        window.onload = function () {
+            var ctx = document.getElementById('canvas').getContext('2d');
+            window.myLine = Chart.Line(ctx, {
+                data: lineChartData,
+                options: {
+                    responsive: true,
+                    hoverMode: 'index',
+                    stacked: false,
+                    title: {
+                        display: true,
+                        text: 'Monthly Usage Data '
+                    },
+                    scales: {
+                        yAxes: [{
+                            type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+                            display: true,
+                            position: 'left',
+                            id: 'y-axis-1',
+                        }, {
+                            type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+                            display: true,
+                            position: 'right',
+                            id: 'y-axis-2',
+
+                            // grid line settings
+                            gridLines: {
+                                drawOnChartArea: false, // only want the grid lines for one axis to show up
+                            },
+                        }],
+                    }
+                }
+            });
+        };
+
+
+    </script>
+}
+

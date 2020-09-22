@@ -135,7 +135,7 @@ namespace SWMSB.BAL
         {
             if (!MemoryCache.Default.Contains("PIECHART_ACTIVE_METERS"))
             {
-               var activeDevices = await iotHubManager.GetDevicesByActiveTime(30);
+               var activeDevices = await iotHubManager.GetDevicesByActiveTime(60);
 
                 MemoryCache.Default.Set(new CacheItem("PIECHART_ACTIVE_METERS", activeDevices), new CacheItemPolicy()
                 {

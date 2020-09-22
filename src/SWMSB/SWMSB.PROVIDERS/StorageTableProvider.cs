@@ -19,7 +19,8 @@ namespace SWMSB.PROVIDERS
                 var item = new TelemetryStorage {
                     PartitionKey = dynamicTableEntity.PartitionKey.ToString(),
                     RowKey = dynamicTableEntity.RowKey.ToString(),
-                    DayWaterUsage =double.Parse(dynamicTableEntity.Properties["daywaterusage"].ToString())
+                    DayWaterUsage =double.Parse(dynamicTableEntity.Properties["daywaterusage"].ToString()),
+                    AvgWaterUsage = double.Parse(dynamicTableEntity.Properties["avg"].ToString()),
                 };
                 list.Add(item);
             }
@@ -200,6 +201,9 @@ namespace SWMSB.PROVIDERS
 
         [JsonProperty("Daywaterusage")]
         public double DayWaterUsage { get; set; }
+
+        [JsonProperty("AvgWaterUsage")]
+        public double AvgWaterUsage { get; set; }
 
     }
 }
