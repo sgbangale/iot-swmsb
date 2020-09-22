@@ -1,14 +1,13 @@
 ﻿@model List<IoTDevice>
 @{
-    ViewData["Title"] = "Active Meters - Last 30 Minutes";
+    ViewData["Title"] = "All Water Meters";
 }
 <h2>@ViewData["Title"]</h2>
 
 <div class="content" >
     <canvas id="canvas" style="width:100%;height:80%"></canvas>
     <div class="toolbar">
-        <a href="home/Meters">All Meters</a>
-
+        <a asp-action="Meters"><button class="btn btn-primary">All Water Meters</button></a>
     </div>
 </div>
 @section scripts {
