@@ -29,7 +29,7 @@ namespace SWMSB.PROCESSORS
         {
             var exceptions = new List<Exception>();
             BackendRepository backendRepository = new BackendRepository(Config, log);
-
+            log.LogInformation($"{typeof(MessageProcessor)} event count-: {events?.Length}");
             foreach (EventData eventData in events)
             {
                 try
@@ -65,7 +65,7 @@ namespace SWMSB.PROCESSORS
                 catch (Exception e)
                 {
                     exceptions.Add(e);
-                    log.LogError(e, $"{typeof(MessageProcessor)} exception");
+                    log.LogError(e, $"{typeof(MessageProcessor)} exception-{e.Message}");
                 }
             }
         }
