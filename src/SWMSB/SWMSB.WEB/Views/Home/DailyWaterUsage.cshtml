@@ -21,7 +21,7 @@
         var lineChartData = {
             labels:days,
             datasets: [{
-                label: 'Monthly Usage Data',
+                label: 'Daily Usage Data',
                 borderColor: window.chartColors.red,
                 backgroundColor: window.chartColors.red,
                 fill: false,
@@ -30,7 +30,7 @@
                 ],
                 yAxisID: 'y-axis-1',
             }, {
-                label: 'Average Monthly Usage Data',
+                label: 'Average Daily Usage Data',
                 borderColor: window.chartColors.blue,
                 backgroundColor: window.chartColors.blue,
                 fill: false,
@@ -51,7 +51,7 @@
                     stacked: false,
                     title: {
                         display: true,
-                        text: 'Monthly Usage Data '
+                        text: 'Daily Usage Data'
                     },
                     scales: {
                         yAxes: [{

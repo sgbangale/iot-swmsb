@@ -41,11 +41,7 @@ namespace SWMSB.BAL
         {
             logger.LogInformation("device msg received");
 
-            //var deviceTelemetryDocumentMapper = TelemetryMsgToDocument.CreateMapper();
-            //DeviceTelemetryDocument _deviceTelemetryDocument = deviceTelemetryDocumentMapper.Map<DeviceTelemetryDocument>(msg);
-            //_deviceTelemetryDocument.Id = DeviceTelemetryDocument.GetDocumentKey(_deviceTelemetryDocument.Deviceid);
-            //await AddOrUpdateAsync(_deviceTelemetryDocument);
-
+           
             TelemetryStorage _telemetryStorageData = new TelemetryStorage
             {
                 DeviceId = msg.Deviceid,
@@ -66,11 +62,7 @@ namespace SWMSB.BAL
         public async Task<bool> SampleTelemetryData()
         {
             logger.LogInformation("sampling started ");
-#if DEBUG
-            var dateTimeUtcNow = DateTime.Now;
-#else
-  var dateTimeUtcNow = DateTime.UtcNow;
-#endif
+
 
 
             var query =

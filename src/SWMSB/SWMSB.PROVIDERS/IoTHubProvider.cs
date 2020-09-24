@@ -131,10 +131,10 @@ namespace SWMSB.PROVIDERS
 
             return result;
         }
-        public async Task<List<IoTDevice>> GetDevicesByActiveTime(int minutes)
+        public async Task<List<IoTDevice>> GetDeviceByConnectivityStatus(bool showConnected)
         {
-            var date = DateTime.UtcNow.AddMinutes(-minutes).ToString("o");
-            var query = $"SELECT deviceId,  lastActivityTime,tags.email,tags.apptno FROM devices WHERE lastActivityTime > '{date}'";
+            var query = showConnected ? $"SELECT deviceId,  lastActivityTime,tags.email,tags.apptno FROM devices WHERE connectionState ='Connected'" :
+                $"SELECT deviceId,  lastActivityTime,tags.email,tags.apptno FROM devices WHERE connectionState ='Disconnected'";
             var devicequery = Manager.CreateQuery(query);
             var devices = await devicequery.GetNextAsJsonAsync();
             var deviceData = devices.ToList();

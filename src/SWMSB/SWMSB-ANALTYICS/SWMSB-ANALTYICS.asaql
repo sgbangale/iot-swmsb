@@ -1,40 +1,84 @@
-﻿select waterusage,dev_id,'ALERT_FIFTY_G' AS alerttype
-INTO
-    [alert]
-    FROM
-    (
-select max(waterusage) as waterusage,dev_id
+﻿WITH ReaderQuery AS (
+	SELECT
+		dev_id,
+		payload_fields.waterusage AS waterusage,
+		metadata.time AS eventtime
+	FROM iothub AS IOT 
+	TIMESTAMP BY metadata.time
+    WHERE IoTHub.MessageId IS NOT NULL
+        
+)
 
+SELECT 
+	dev_id,
+	waterusage,
+	alerttype
+INTO [alert]
+FROM 
+	(
+		SELECT 
+			dev_id,
+			waterusage+LAG(waterusage,1,0) OVER (PARTITION BY dev_id  LIMIT DURATION(minute, 30)) AS waterusage,
+			'ALERT_FIFTY_G' AS alerttype
+		FROM
+			(
+				SELECT 
+					dev_id,
+					SUM(waterusage) AS waterusage
+				FROM 
+					ReaderQuery  
+				GROUP BY 
+				dev_id,
+				TUMBLINGWINDOW(minute,30)
+			) AS thirtymintlm
+	) AS finalalert 
+	WHERE waterusage > 50
+
+
+SELECT 
+	dev_id,
+	waterusage,
+	'ALERT_THOUSAND_G' AS alerttype
+INTO 
+	[dayalert]
 FROM
-(
-SELECT SUM(payload_fields.waterusage) OVER (PARTITION BY dev_id LIMIT DURATION (minute, 5))  AS waterusage,
-dev_id
+	(
+		SELECT 
+			dev_id,
+			SUM(waterusage) AS waterusage
+		FROM 
+			ReaderQuery
+		GROUP BY 
+			dev_id, 
+			TumblingWindow(hour,24)
+	) AS dayalertT
+WHERE 
+	waterusage >= 1000
+
+
+SELECT 
+	rowkey,
+	SUM(waterusage) AS daywaterusage,
+	avg(waterusage),
+	partitionkey
+INTO 
+	[daydatAStorage]
 FROM
-    iothub AS IOT
-) as t
-group by dev_id, TumblingWindow(minute,60)
-) AS tt
-where waterusage > 50
-
-select dev_id,waterusage,'ALERT_THOUSAND_G' AS alerttype
-INTO [dayalert]
-from(
-SELECT dev_id,SUM(payload_fields.waterusage) as waterusage
-FROM iothub AS IOT
-group by dev_id, TumblingWindow(hour,24)) as dayalertT
-where waterusage >= 1000
-
-select rowkey,sum(waterusage) as daywaterusage,avg(waterusage),partitionkey
-into daydatastorage
-from(
-select dev_id as partitionkey,waterusage,
-concat(DATENAME (m, time),'-',DATENAME (year, time),'-',DATENAME (day, time)) as rowkey
-from(
-SELECT dev_id,(payload_fields.waterusage) as waterusage,metadata.time
-FROM iothub AS IOT
-) as usage
-) as dayalertT
-group by rowkey,partitionkey,TumblingWindow(hour,24)
-
-
-
+	(
+		SELECT dev_id AS partitionkey,
+		waterusage,
+		concat(DATENAME (m, eventtime),'-',DATENAME (year, eventtime),'-',DATENAME (day, eventtime)) AS rowkey
+		FROM
+			(
+				SELECT 
+					dev_id,
+					waterusage AS waterusage,
+					eventtime
+				FROM 
+					ReaderQuery 
+			) AS usage
+	) AS dayalertT
+GROUP BY 
+	rowkey,
+	partitionkey,
+	TumblingWindow(hour,24)
